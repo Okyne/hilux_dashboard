@@ -1,0 +1,16 @@
+# UI
+kivy[base]>=2.1
+kivymd==1.1.1        # Material Design (compatible Kivy 2.1)
+
+# Bus de messages
+paho-mqtt>=1.6
+
+# Acquisition
+obd>=0.7.1          # python-OBD (dongle ELM327)
+pyyaml>=6.0
+
+# Matériel Raspberry Pi (à installer seulement sur le Pi)
+# smbus2>=0.4        # IMU MPU-6050/9250 (I2C)
+# spidev>=3.5        # ADC MCP3008 (boost analogique)
+# pyserial>=3.5      # récepteur TPMS série
+# w1thermsensor      # alternative pratique pour les DS18B20

@@ -1,0 +1,57 @@
+# Configuration du service d'acquisition.
+# Chaque lecteur peut être désactivé (enabled: false) ou forcé en simulation
+# (simulate: true) tant que le matériel n'est pas branché.
+
+mqtt:
+  host: 127.0.0.1
+  port: 1883
+
+logging:
+  db_path: /home/pi/hilux_dash/logs/telemetry.db
+  # période d'écriture d'un point de log (secondes)
+  interval: 1.0
+  # purge des points plus vieux que N jours (0 = jamais)
+  retention_days: 30
+
+obd:
+  enabled: true
+  simulate: false
+  # port du dongle ELM327 (USB : /dev/ttyUSB0, BT rfcomm : /dev/rfcomm0)
+  port: /dev/ttyUSB0
+  baudrate: 38400
+  # fréquence d'interrogation (Hz)
+  rate: 3
+  # densité du gazole (g/L) pour l'estimation de conso
+  diesel_density: 835.0
+  # ratio air/carburant moyen retenu pour l'estimation MAF (diesel ~ variable)
+  afr: 18.0
+
+imu:
+  enabled: true
+  simulate: false
+  i2c_bus: 1
+  address: 0x68          # MPU-6050 / MPU-9250
+  rate: 20               # Hz
+  # offsets de calibration (à régler véhicule à plat, via l'écran Réglages)
+  offset_roll: 0.0
+  offset_pitch: 0.0
+
+sensors:
+  enabled: true
+  simulate: false
+  # sondes 1-Wire DS18B20 : identifiants (ls /sys/bus/w1/devices/)
+  ext_temp_id: "28-xxxxxxxxxxxx"
+  oil_temp_id: "28-yyyyyyyyyyyy"
+  rate: 1                # Hz
+  # capteur de boost sur ADC MCP3008 si absent de l'OBD
+  boost_from_adc: false
+  adc_channel: 0
+
+tpms:
+  enabled: true
+  simulate: false
+  port: /dev/ttyUSB1
+  baudrate: 9600
+  # pression cible et tolérance (bar) — sert aussi aux couleurs d'alerte UI
+  target_bar: 2.5
+  tol_bar: 0.3
