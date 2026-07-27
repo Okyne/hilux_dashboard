@@ -25,7 +25,6 @@ from kivy.properties import BooleanProperty, ListProperty, StringProperty
 from kivymd.app import MDApp
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.button import MDFlatButton, MDRaisedButton
-from kivymd.uix.label import MDLabel
 from kivymd.uix.screen import MDScreen
 
 # Enregistre les widgets canvas pour le .kv
@@ -87,6 +86,7 @@ class HiluxApp(MDApp):
     c_alarm = ListProperty([0.85, 0.20, 0.20, 1])
 
     bg_image = StringProperty("assets/bg_day.png")
+    clock_str = StringProperty("--:--")
 
     def build(self):
         # Thème Material 3
@@ -105,6 +105,7 @@ class HiluxApp(MDApp):
         root = RootScreen()
         nav = root.ids.nav
         nav.remove_widget(nav.ids.bottom_panel)  # footer retiré (swipe only)
+
         self.apply_theme()
         self._dialog = None
         Clock.schedule_interval(self._tick, 1 / 5.0)   # 5 Hz
@@ -155,8 +156,7 @@ class HiluxApp(MDApp):
                 ids[wid].value = v.get(key, 0.0)
         if "g_ext" in ids:
             ids["g_ext"].text = "{:.0f}°".format(v["ext_temp"])
-        if "g_clock" in ids:
-            ids["g_clock"].text = time.strftime("%H:%M")
+        self.clock_str = time.strftime("%H:%M")
         if "g_speed" in ids:
             ids["g_speed"].text = "{:.0f}".format(v.get("speed", 0.0))
         if "g_heading" in ids:
