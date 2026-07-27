@@ -15,7 +15,7 @@ logging:
 
 obd:
   enabled: true
-  simulate: false
+  simulate: true
   # port du dongle ELM327 (USB : /dev/ttyUSB0, BT rfcomm : /dev/rfcomm0)
   port: /dev/ttyUSB0
   baudrate: 38400
@@ -28,7 +28,7 @@ obd:
 
 imu:
   enabled: true
-  simulate: false
+  simulate: true
   i2c_bus: 1
   address: 0x68          # MPU-6050 / MPU-9250
   rate: 20               # Hz
@@ -38,7 +38,7 @@ imu:
 
 sensors:
   enabled: true
-  simulate: false
+  simulate: true
   # sondes 1-Wire DS18B20 : identifiants (ls /sys/bus/w1/devices/)
   ext_temp_id: "28-xxxxxxxxxxxx"
   oil_temp_id: "28-yyyyyyyyyyyy"
@@ -49,7 +49,7 @@ sensors:
 
 tpms:
   enabled: true
-  simulate: false
+  simulate: true
   port: /dev/ttyUSB1
   baudrate: 9600
   # pression cible et tolérance (bar) — sert aussi aux couleurs d'alerte UI
