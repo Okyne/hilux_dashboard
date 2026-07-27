@@ -7,21 +7,20 @@ chaîne d'acquisition.
 
 ## Contenu
 
-| Fichier | Rôle |
-|---|---|
-| `main.py` | Application, ScreenManager, thème, navigation, shutdown |
-| `hilux.kv` | Mise en page déclarative des 5 écrans + barre globale |
+| Fichier      | Rôle                                                       |
+| ------------ | ---------------------------------------------------------- |
+| `main.py`    | Application, ScreenManager, thème, navigation, shutdown    |
+| `hilux.kv`   | Mise en page déclarative des 5 écrans + barre globale      |
 | `widgets.py` | Widgets canvas : jauge, inclinomètre, schéma pneus, TopBar |
-| `screens.py` | Logique de rafraîchissement des écrans |
-| `theme.py` | Palettes jour / nuit centralisées |
-| `data.py` | Source de données factice (à remplacer par un client MQTT) |
+| `screens.py` | Logique de rafraîchissement des écrans                     |
+| `theme.py`   | Palettes jour / nuit centralisées                          |
+| `data.py`    | Source de données factice (à remplacer par un client MQTT) |
 
 ## Écrans
 
 1. **Moteur** : 6 jauges (huile, liquide, boost, conso moy/inst, temp ext.)
 2. **Inclinaison** : roulis + tangage (silhouette qui s'incline, code couleur)
 3. **Pneus** : vue de dessus, 4 pressions colorées selon écart à la cible
-4. **Dashcam** : placeholder (brancher OpenCV -> Texture), boutons AV/AR
 
 Barre globale (sur tous les écrans) : navigation + **Nuit/Jour**, **Réglages**,
 **Arrêt** (avec popup de confirmation).

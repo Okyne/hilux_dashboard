@@ -9,7 +9,7 @@
     orientation: "vertical"
     padding: dp(8)
     radius: [dp(16), dp(16), dp(16), dp(16)]
-    md_bg_color: app.c_surface
+    md_bg_color: app.c_surface[0], app.c_surface[1], app.c_surface[2], 0.85
     elevation: 2
     title: ""
     unit: ""
@@ -42,181 +42,158 @@
 #  Racine
 # --------------------------------------------------------------------------- #
 <RootScreen>:
-    MDBoxLayout:
-        orientation: "vertical"
+    FloatLayout:
+        Image:
+            source: app.bg_image
+            fit_mode: "cover"
 
-        MDTopAppBar:
-            title: ""
-            elevation: 0
-            md_bg_color: app.c_bg
-            right_action_items: [["weather-night" if not app.night_mode else "white-balance-sunny", lambda x: app.toggle_night()], ["cog", lambda x: app.open_settings()], ["power", lambda x: app.ask_shutdown()]]
+        MDBoxLayout:
+            orientation: "vertical"
 
-        MDBottomNavigation:
-            id: nav
-            panel_color: app.theme_cls.primary_color
+            MDTopAppBar:
+                title: ""
+                elevation: 0
+                md_bg_color: app.c_bg[0], app.c_bg[1], app.c_bg[2], 0.85
+                right_action_items: [["weather-night" if not app.night_mode else "white-balance-sunny", lambda x: app.toggle_night()], ["cog", lambda x: app.open_settings()], ["power", lambda x: app.ask_shutdown()]]
 
-            # ---------------- Écran 1 : moteur ----------------
-            MDBottomNavigationItem:
-                name: "engine"
-                text: "Moteur"
-                icon: "engine"
-                GridLayout:
-                    cols: 3
-                    rows: 2
-                    spacing: dp(10)
-                    padding: dp(10)
-                    ValueCard:
-                        id: g_oil
-                        title: "Temp. huile"
-                        unit: "C"
-                        vmin: 40
-                        vmax: 150
-                        warn: 120
-                        alarm: 135
-                    ValueCard:
-                        id: g_coolant
-                        title: "Temp. liquide"
-                        unit: "C"
-                        vmin: 40
-                        vmax: 130
-                        warn: 105
-                        alarm: 115
-                    ValueCard:
-                        id: g_boost
-                        title: "Turbo (boost)"
-                        unit: "bar"
-                        vmin: 0
-                        vmax: 2.5
-                    ValueCard:
-                        id: g_favg
-                        title: "Conso moy."
-                        unit: "L/100"
-                        vmin: 0
-                        vmax: 20
-                    ValueCard:
-                        id: g_finst
-                        title: "Conso inst."
-                        unit: "L/100"
-                        vmin: 0
-                        vmax: 30
-                    ValueCard:
-                        id: g_ext
-                        title: "Temp. ext."
-                        unit: "C"
-                        vmin: -20
-                        vmax: 50
+            MDBottomNavigation:
+                id: nav
+                panel_color: app.theme_cls.primary_color
 
-            # ---------------- Écran 2 : inclinaison ----------------
-            MDBottomNavigationItem:
-                name: "tilt"
-                text: "Inclinaison"
-                icon: "angle-acute"
-                MDBoxLayout:
-                    padding: dp(12)
-                    spacing: dp(12)
-                    MDCard:
-                        orientation: "vertical"
-                        md_bg_color: app.c_surface
-                        radius: [dp(16),]
-                        padding: dp(8)
-                        MDLabel:
-                            text: "Roulis (lateral)"
-                            halign: "center"
-                            theme_text_color: "Secondary"
-                            size_hint_y: 0.15
-                        TiltIndicator:
-                            id: roll
-                            axis: "roll"
-                        MDLabel:
-                            text: "{:+.0f} deg".format(roll.angle)
-                            halign: "center"
-                            font_style: "H4"
-                            size_hint_y: 0.2
-                    MDCard:
-                        orientation: "vertical"
-                        md_bg_color: app.c_surface
-                        radius: [dp(16),]
-                        padding: dp(8)
-                        MDLabel:
-                            text: "Tangage (avant/arriere)"
-                            halign: "center"
-                            theme_text_color: "Secondary"
-                            size_hint_y: 0.15
-                        TiltIndicator:
-                            id: pitch
-                            axis: "pitch"
-                        MDLabel:
-                            text: "{:+.0f} deg".format(pitch.angle)
-                            halign: "center"
-                            font_style: "H4"
-                            size_hint_y: 0.2
+                # ---------------- Écran 1 : moteur ----------------
+                MDBottomNavigationItem:
+                    name: "engine"
+                    text: "Moteur"
+                    icon: "engine"
+                    GridLayout:
+                        cols: 3
+                        rows: 2
+                        spacing: dp(10)
+                        padding: dp(10)
+                        ValueCard:
+                            id: g_oil
+                            title: "Temp. huile"
+                            unit: "C"
+                            vmin: 40
+                            vmax: 150
+                            warn: 120
+                            alarm: 135
+                        ValueCard:
+                            id: g_coolant
+                            title: "Temp. liquide"
+                            unit: "C"
+                            vmin: 40
+                            vmax: 130
+                            warn: 105
+                            alarm: 115
+                        ValueCard:
+                            id: g_boost
+                            title: "Turbo (boost)"
+                            unit: "bar"
+                            vmin: 0
+                            vmax: 2.5
+                        ValueCard:
+                            id: g_favg
+                            title: "Conso moy."
+                            unit: "L/100"
+                            vmin: 0
+                            vmax: 20
+                        ValueCard:
+                            id: g_finst
+                            title: "Conso inst."
+                            unit: "L/100"
+                            vmin: 0
+                            vmax: 30
+                        ValueCard:
+                            id: g_ext
+                            title: "Temp. ext."
+                            unit: "C"
+                            vmin: -20
+                            vmax: 50
 
-            # ---------------- Écran 3 : pneus ----------------
-            MDBottomNavigationItem:
-                name: "tires"
-                text: "Pneus"
-                icon: "car-tire-alert"
-                MDBoxLayout:
-                    orientation: "vertical"
-                    padding: dp(12)
-                    MDLabel:
-                        text: "Pression pneumatiques (bar)"
-                        halign: "center"
-                        theme_text_color: "Secondary"
-                        size_hint_y: 0.1
-                    FloatLayout:
-                        TireDiagram:
-                            id: tires
-                            pos_hint: {"center_x": .5, "center_y": .5}
-                        MDLabel:
-                            text: "{:.2f}".format(tires.fl)
-                            halign: "center"
-                            font_style: "H5"
-                            size_hint: None, None
-                            pos_hint: {"center_x": .30, "center_y": .82}
-                        MDLabel:
-                            text: "{:.2f}".format(tires.fr)
-                            halign: "center"
-                            font_style: "H5"
-                            size_hint: None, None
-                            pos_hint: {"center_x": .70, "center_y": .82}
-                        MDLabel:
-                            text: "{:.2f}".format(tires.rl)
-                            halign: "center"
-                            font_style: "H5"
-                            size_hint: None, None
-                            pos_hint: {"center_x": .30, "center_y": .18}
-                        MDLabel:
-                            text: "{:.2f}".format(tires.rr)
-                            halign: "center"
-                            font_style: "H5"
-                            size_hint: None, None
-                            pos_hint: {"center_x": .70, "center_y": .18}
-
-            # ---------------- Écran 4 : dashcam ----------------
-            MDBottomNavigationItem:
-                name: "dashcam"
-                text: "Dashcam"
-                icon: "cctv"
-                MDBoxLayout:
-                    orientation: "vertical"
-                    padding: dp(12)
-                    spacing: dp(8)
-                    MDCard:
-                        id: cam_view
-                        md_bg_color: 0, 0, 0, 1
-                        radius: [dp(12),]
-                        MDLabel:
-                            text: "Flux camera (a brancher : OpenCV -> Texture)"
-                            halign: "center"
-                            theme_text_color: "Secondary"
+                # ---------------- Écran 2 : inclinaison ----------------
+                MDBottomNavigationItem:
+                    name: "tilt"
+                    text: "Inclinaison"
+                    icon: "angle-acute"
                     MDBoxLayout:
-                        size_hint_y: None
-                        height: dp(50)
-                        spacing: dp(8)
-                        MDRaisedButton:
-                            text: "CAMERA AVANT"
-                            size_hint_x: 0.5
-                        MDRaisedButton:
-                            text: "CAMERA ARRIERE"
-                            size_hint_x: 0.5
+                        padding: dp(12)
+                        spacing: dp(12)
+                        MDCard:
+                            orientation: "vertical"
+                            md_bg_color: app.c_surface[0], app.c_surface[1], app.c_surface[2], 0.85
+                            radius: [dp(16),]
+                            padding: dp(8)
+                            MDLabel:
+                                text: "Roulis (lateral)"
+                                halign: "center"
+                                theme_text_color: "Secondary"
+                                size_hint_y: 0.15
+                            TiltIndicator:
+                                id: roll
+                                axis: "roll"
+                            MDLabel:
+                                text: "{:+.0f} deg".format(roll.angle)
+                                halign: "center"
+                                font_style: "H4"
+                                size_hint_y: 0.2
+                        MDCard:
+                            orientation: "vertical"
+                            md_bg_color: app.c_surface[0], app.c_surface[1], app.c_surface[2], 0.85
+                            radius: [dp(16),]
+                            padding: dp(8)
+                            MDLabel:
+                                text: "Tangage (avant/arriere)"
+                                halign: "center"
+                                theme_text_color: "Secondary"
+                                size_hint_y: 0.15
+                            TiltIndicator:
+                                id: pitch
+                                axis: "pitch"
+                            MDLabel:
+                                text: "{:+.0f} deg".format(pitch.angle)
+                                halign: "center"
+                                font_style: "H4"
+                                size_hint_y: 0.2
+
+                # ---------------- Écran 3 : pneus ----------------
+                MDBottomNavigationItem:
+                    name: "tires"
+                    text: "Pneus"
+                    icon: "car-tire-alert"
+                    MDBoxLayout:
+                        orientation: "vertical"
+                        padding: dp(12)
+                        MDLabel:
+                            text: "Pression pneumatiques (bar)"
+                            halign: "center"
+                            theme_text_color: "Secondary"
+                            size_hint_y: 0.1
+                        FloatLayout:
+                            TireDiagram:
+                                id: tires
+                                pos_hint: {"center_x": .5, "center_y": .5}
+                            MDLabel:
+                                text: "{:.2f}".format(tires.fl)
+                                halign: "center"
+                                font_style: "H5"
+                                size_hint: None, None
+                                pos_hint: {"center_x": .30, "center_y": .82}
+                            MDLabel:
+                                text: "{:.2f}".format(tires.fr)
+                                halign: "center"
+                                font_style: "H5"
+                                size_hint: None, None
+                                pos_hint: {"center_x": .70, "center_y": .82}
+                            MDLabel:
+                                text: "{:.2f}".format(tires.rl)
+                                halign: "center"
+                                font_style: "H5"
+                                size_hint: None, None
+                                pos_hint: {"center_x": .30, "center_y": .18}
+                            MDLabel:
+                                text: "{:.2f}".format(tires.rr)
+                                halign: "center"
+                                font_style: "H5"
+                                size_hint: None, None
+                                pos_hint: {"center_x": .70, "center_y": .18}

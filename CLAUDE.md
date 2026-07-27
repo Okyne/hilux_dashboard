@@ -51,7 +51,7 @@ There is no lint/format config in the repo (no flake8/pyproject/ruff config foun
   (mqtt_source.py) — both expose the same `values` dict / `update()` contract.
 - `hilux.kv` — declarative layout for the `Root` screen: `MDTopAppBar` (global
   actions: night/day toggle, settings, shutdown) + `MDBottomNavigation` with
-  4 tabs (engine / tilt / tires / dashcam). The `ValueCard` template
+  4 tabs (engine / tilt / tires ). The `ValueCard` template
   (gauge card used on the engine screen) is also defined here.
 - `widgets.py` — canvas-drawn widgets (chosen for Pi 3 performance over
   heavier KivyMD components): `Gauge` (circular arc gauge), `TiltIndicator`

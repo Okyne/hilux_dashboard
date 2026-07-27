@@ -1,2 +1,3 @@
 .superpowers/
 venv/
+.DS_Store

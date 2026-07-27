@@ -19,7 +19,7 @@ Config.set("graphics", "height", "600")
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.metrics import dp
-from kivy.properties import BooleanProperty, ListProperty
+from kivy.properties import BooleanProperty, ListProperty, StringProperty
 
 from kivymd.app import MDApp
 from kivymd.uix.dialog import MDDialog
@@ -35,7 +35,7 @@ import theme
 
 # Ordre des onglets (doit correspondre aux `name:` des MDBottomNavigationItem
 # dans hilux.kv) : pilote la navigation par swipe gauche/droite.
-SCREEN_ORDER = ["engine", "tilt", "tires", "dashcam"]
+SCREEN_ORDER = ["engine", "tilt", "tires"]
 SWIPE_THRESHOLD = dp(60)
 
 
@@ -73,6 +73,8 @@ class HiluxApp(MDApp):
     c_ok = ListProperty([0.16, 0.65, 0.34, 1])
     c_warn = ListProperty([0.90, 0.60, 0.10, 1])
     c_alarm = ListProperty([0.85, 0.20, 0.20, 1])
+
+    bg_image = StringProperty("assets/bg_day.png")
 
     def build(self):
         # Thème Material 3
@@ -116,6 +118,7 @@ class HiluxApp(MDApp):
         self.c_ok = list(p["ok"])
         self.c_warn = list(p["warn"])
         self.c_alarm = list(p["alarm"])
+        self.bg_image = "assets/bg_night.png" if self.night_mode else "assets/bg_day.png"
 
     def toggle_night(self):
         self.night_mode = not self.night_mode
