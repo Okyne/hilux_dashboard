@@ -18,6 +18,8 @@
                 id: topbar
                 title: app.clock_str
                 elevation: 0
+                md_bg_color: 0, 0, 0, 0.01
+                specific_text_color: 1, 1, 1, 1
                 right_action_items: [["weather-night" if not app.night_mode else "white-balance-sunny", lambda x: app.toggle_night()], ["cog", lambda x: app.open_settings()], ["power", lambda x: app.ask_shutdown()]]
 
             MDBottomNavigation:

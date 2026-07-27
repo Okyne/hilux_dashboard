@@ -106,6 +106,7 @@ class HiluxApp(MDApp):
         nav = root.ids.nav
         nav.remove_widget(nav.ids.bottom_panel)  # footer retiré (swipe only)
 
+        self._topbar = root.ids.topbar
         self.apply_theme()
         self._dialog = None
         Clock.schedule_interval(self._tick, 1 / 5.0)   # 5 Hz
@@ -131,6 +132,11 @@ class HiluxApp(MDApp):
         self.c_warn = list(p["warn"])
         self.c_alarm = list(p["alarm"])
         self.bg_image = "assets/bg_night.png" if self.night_mode else "assets/bg_day.png"
+        # MDTopAppBar réaligne md_bg_color sur le primary_color du thème à
+        # chaque changement de primary_palette (cf. son propre binding
+        # interne) : on la repasse en transparent juste après, sinon la
+        # barre redevient bleue/ambrée à chaque toggle_night().
+        self._topbar.md_bg_color = (0, 0, 0, 0.01)
 
     def toggle_night(self):
         self.night_mode = not self.night_mode
