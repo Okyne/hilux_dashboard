@@ -1,6 +1,8 @@
 """
 Widgets personnalisés dessinés au canvas (légers pour le Pi 3) :
-- Gauge          : jauge circulaire à arc + valeur numérique (écran 1)
+- VBarGauge      : jauge verticale segmentée (huile, niveau carburant — écran 1)
+- HBarGauge      : jauge horizontale segmentée (liquide de refroidissement — écran 1)
+- HeadingArrow   : flèche de cap fixe (écran 1)
 - TiltIndicator  : silhouette qui s'incline selon roll/pitch (écran 2)
 - TireDiagram    : vue de dessus du véhicule + 4 pressions colorées (écran 3)
 - TopBar         : barre globale (navigation + nuit / settings / shutdown)
@@ -10,58 +12,116 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.properties import (
-    NumericProperty, StringProperty, ListProperty, BoundedNumericProperty,
+    NumericProperty, StringProperty, ListProperty, BooleanProperty,
+    BoundedNumericProperty,
 )
-from kivy.graphics import Color, Line, Ellipse, Rectangle, Rotate, PushMatrix, PopMatrix
+from kivy.graphics import (
+    Color, Line, Ellipse, Rectangle, RoundedRectangle, Mesh,
+    Rotate, PushMatrix, PopMatrix,
+)
 from kivy.metrics import dp
 from kivy.app import App
 import math
 
 
 # --------------------------------------------------------------------------- #
-#  Jauge circulaire
+#  Jauges segmentées (barre verticale / horizontale)
 # --------------------------------------------------------------------------- #
-class Gauge(Widget):
-    title = StringProperty("")
-    unit = StringProperty("")
+class _SegmentedBarGauge(Widget):
+    """Base commune : fraction remplie colorée selon la sévérité, le reste en gris."""
     value = NumericProperty(0.0)
     vmin = NumericProperty(0.0)
     vmax = NumericProperty(100.0)
-    warn = NumericProperty(1e9)   # seuil alerte modérée
-    alarm = NumericProperty(1e9)  # seuil alerte grave
+    warn = NumericProperty(1e9)
+    alarm = NumericProperty(1e9)
+    invert = BooleanProperty(False)   # True : danger quand value est BAS (ex. carburant)
+    segments = NumericProperty(10)
 
     def __init__(self, **kw):
         super().__init__(**kw)
-        self.bind(pos=self._redraw, size=self._redraw, value=self._redraw)
+        for p in ("pos", "size", "value"):
+            self.bind(**{p: self._redraw})
 
-    def _color_for_value(self):
+    def _fraction(self):
+        if self.vmax <= self.vmin:
+            return 0.0
+        return max(0.0, min(1.0, (self.value - self.vmin) / (self.vmax - self.vmin)))
+
+    def _fill_color(self):
         app = App.get_running_app()
-        if self.value >= self.alarm:
+        v = self.value
+        bad = (v <= self.alarm) if self.invert else (v >= self.alarm)
+        mid = (v <= self.warn) if self.invert else (v >= self.warn)
+        if bad:
             return app.c_alarm
-        if self.value >= self.warn:
+        if mid:
             return app.c_warn
-        return app.c_accent
+        return app.c_text
+
+
+class VBarGauge(_SegmentedBarGauge):
+    """Remplissage du bas vers le haut."""
 
     def _redraw(self, *_):
         self.canvas.clear()
         app = App.get_running_app()
-        cx, cy = self.center_x, self.center_y
-        r = min(self.width, self.height) * 0.40
-        start, end = 135, -135          # arc de 270°
-        span = start - end
-        frac = 0.0
-        if self.vmax > self.vmin:
-            frac = max(0.0, min(1.0, (self.value - self.vmin) / (self.vmax - self.vmin)))
+        frac = self._fraction()
+        fill = self._fill_color()
+        n = int(self.segments)
+        gap = self.height / n
+        seg_h = gap * 0.2
         with self.canvas:
-            # piste de fond
-            Color(*app.c_text_dim)
-            Line(circle=(cx, cy, r, end, start), width=dp(6))
-            # arc de valeur
-            Color(*self._color_for_value())
-            Line(circle=(cx, cy, r, start - span * frac, start), width=dp(6))
+            for i in range(n):
+                y = self.y + i * gap + (gap - seg_h) / 2
+                Color(*(fill if (i + 0.5) / n <= frac else app.c_text_dim))
+                RoundedRectangle(pos=(self.x, y), size=(self.width, seg_h),
+                                  radius=[seg_h / 2])
 
-    def refresh(self):
-        self._redraw()
+
+class HBarGauge(_SegmentedBarGauge):
+    """Remplissage de la gauche vers la droite."""
+
+    def _redraw(self, *_):
+        self.canvas.clear()
+        app = App.get_running_app()
+        frac = self._fraction()
+        fill = self._fill_color()
+        n = int(self.segments)
+        gap = self.width / n
+        seg_w = gap * 1
+        with self.canvas:
+            for i in range(n):
+                x = self.x + i * gap + (gap - seg_w) / 2
+                Color(*(fill if (i + 0.5) / n <= frac else app.c_text_dim))
+                RoundedRectangle(pos=(x, self.y), size=(seg_w, self.height),
+                                  radius=[seg_w / 2])
+
+
+# --------------------------------------------------------------------------- #
+#  Flèche de cap (décorative, fixe)
+# --------------------------------------------------------------------------- #
+class HeadingArrow(Widget):
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        self.bind(pos=self._redraw, size=self._redraw)
+
+    def _redraw(self, *_):
+        self.canvas.clear()
+        app = App.get_running_app()
+        # NB: on calcule le centre à partir de x/y/width/height plutôt que de
+        # center_x/center_y — cette AliasProperty peut renvoyer une valeur
+        # encore en cache au moment où ce callback (lié à pos/size) s'exécute.
+        hw, hh = self.width * 0.5, self.height * 0.5
+        cx, cy = self.x + hw, self.y + hh
+        with self.canvas:
+            Color(*app.c_alarm)
+            Mesh(
+                vertices=[cx, cy + hh, 0, 0,
+                          cx - hw, cy - hh, 0, 0,
+                          cx + hw, cy - hh, 0, 0],
+                indices=[0, 1, 2],
+                mode="triangles",
+            )
 
 
 # --------------------------------------------------------------------------- #

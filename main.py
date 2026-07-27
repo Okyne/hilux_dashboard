@@ -8,6 +8,7 @@ Lancement (dev PC ou Pi) :
 Dépendances : kivy 2.1 + kivymd 1.1.1
 """
 import os
+import time
 from kivy.config import Config
 
 Config.set("graphics", "width", "1024")
@@ -28,7 +29,7 @@ from kivymd.uix.label import MDLabel
 from kivymd.uix.screen import MDScreen
 
 # Enregistre les widgets canvas pour le .kv
-from widgets import Gauge, TiltIndicator, TireDiagram  # noqa: F401
+from widgets import VBarGauge, HBarGauge, HeadingArrow, TiltIndicator, TireDiagram  # noqa: F401
 from data import DummyDataSource
 
 import theme
@@ -37,6 +38,18 @@ import theme
 # dans hilux.kv) : pilote la navigation par swipe gauche/droite.
 SCREEN_ORDER = ["engine", "tilt", "tires"]
 SWIPE_THRESHOLD = dp(60)
+
+_COMPASS_POINTS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
+
+
+def _cardinal(deg):
+    """Point cardinal (8 directions) le plus proche d'un cap en degrés."""
+    return _COMPASS_POINTS[int(deg % 360 / 45 + 0.5) % 8]
+
+
+def _fr(value, fmt="{:.1f}"):
+    """Formate un nombre avec une virgule décimale (convention française)."""
+    return fmt.format(value).replace(".", ",")
 
 
 class RootScreen(MDScreen):
@@ -65,7 +78,6 @@ class HiluxApp(MDApp):
     night_mode = BooleanProperty(False)
 
     # Couleurs dérivées du thème, consommées par les widgets canvas (jauges...)
-    c_bg = ListProperty([0, 0, 0, 1])
     c_surface = ListProperty([1, 1, 1, 1])
     c_text = ListProperty([0, 0, 0, 1])
     c_text_dim = ListProperty([0.4, 0.4, 0.4, 1])
@@ -110,7 +122,6 @@ class HiluxApp(MDApp):
     # ---------------- thème ----------------
     def apply_theme(self):
         p = theme.palette(self.night_mode)
-        self.c_bg = list(p["bg"])
         self.c_surface = list(p["surface"])
         self.c_text = list(p["text"])
         self.c_text_dim = list(p["text_dim"])
@@ -136,12 +147,32 @@ class HiluxApp(MDApp):
         ids = self.root.ids
         v = self.source.values
         gauges = {
-            "g_oil": "oil_temp", "g_coolant": "coolant_temp", "g_boost": "boost",
-            "g_favg": "fuel_avg", "g_finst": "fuel_inst", "g_ext": "ext_temp",
+            "g_oil_bar": "oil_temp", "g_coolant_bar": "coolant_temp",
+            "g_fuel_bar": "fuel_level",
         }
         for wid, key in gauges.items():
             if wid in ids:
-                ids[wid].value = v[key]
+                ids[wid].value = v.get(key, 0.0)
+        if "g_ext" in ids:
+            ids["g_ext"].text = "{:.0f}°".format(v["ext_temp"])
+        if "g_clock" in ids:
+            ids["g_clock"].text = time.strftime("%H:%M")
+        if "g_speed" in ids:
+            ids["g_speed"].text = "{:.0f}".format(v.get("speed", 0.0))
+        if "g_heading" in ids:
+            ids["g_heading"].text = _cardinal(v.get("heading", 0.0))
+        if "g_fuel_inst" in ids:
+            ids["g_fuel_inst"].text = "[size=28sp][b]{}[/b][/size] l/100km".format(
+                _fr(v["fuel_inst"]))
+        if "g_fuel_avg" in ids:
+            ids["g_fuel_avg"].text = "[size=28sp][b]{}[/b][/size] l/100km".format(
+                _fr(v["fuel_avg"]))
+        if "g_battery" in ids:
+            ids["g_battery"].text = "{} [size=14sp]v[/size]".format(
+                _fr(v.get("battery_voltage", 0.0)))
+        if "g_range" in ids:
+            ids["g_range"].text = "{:.0f} [size=14sp]km[/size]".format(
+                v.get("fuel_range", 0.0))
         if "roll" in ids:
             ids["roll"].angle = v["roll"]
         if "pitch" in ids:
