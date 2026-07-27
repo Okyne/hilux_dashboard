@@ -48,9 +48,9 @@ class TestNightSeverityHierarchy(unittest.TestCase):
 
 class TestDayMatchesCurrentConstants(unittest.TestCase):
     def test_day_alert_colors_unchanged(self):
-        self.assertEqual(theme.DAY["ok"], (0.16, 0.65, 0.34, 1))
-        self.assertEqual(theme.DAY["warn"], (0.90, 0.60, 0.10, 1))
-        self.assertEqual(theme.DAY["alarm"], (0.85, 0.20, 0.20, 1))
+        self.assertEqual(theme.DAY["ok"], (0.400, 0.847, 0.255, 1))
+        self.assertEqual(theme.DAY["warn"], (0.710, 0.427, 0.157, 1))
+        self.assertEqual(theme.DAY["alarm"], (0.788, 0.192, 0.153, 1))
 
 
 if __name__ == "__main__":

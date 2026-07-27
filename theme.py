@@ -8,15 +8,17 @@ sont liés dans les fichiers .kv et dans widgets.py.
 """
 
 # Palette JOUR : fond clair, texte foncé, accent bleu.
+# accent/ok/warn/alarm repris de la charte (swatches Info/Success/Warning/Alert),
+# surface/text_dim repris des swatches Primaire/Secondaire.
 DAY = {
     "bg":        (0.93, 0.94, 0.96, 1),
     "surface":   (1.00, 1.00, 1.00, 1),
     "text":      (0.10, 0.11, 0.13, 1),
-    "text_dim":  (0.35, 0.37, 0.40, 1),
-    "accent":    (0.13, 0.45, 0.85, 1),
-    "ok":        (0.16, 0.65, 0.34, 1),
-    "warn":      (0.90, 0.60, 0.10, 1),
-    "alarm":     (0.85, 0.20, 0.20, 1),
+    "text_dim":  (0.412, 0.404, 0.404, 1),
+    "accent":    (0.224, 0.357, 0.761, 1),
+    "ok":        (0.400, 0.847, 0.255, 1),
+    "warn":      (0.710, 0.427, 0.157, 1),
+    "alarm":     (0.788, 0.192, 0.153, 1),
     "topbar":    (0.16, 0.18, 0.22, 1),
     "topbar_tx": (0.95, 0.96, 0.98, 1),
 }
