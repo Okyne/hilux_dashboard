@@ -16,21 +16,49 @@ Config.set("graphics", "height", "600")
 # Config.set("graphics", "fullscreen", "auto")
 # Config.set("graphics", "show_cursor", "0")
 
-from kivy.lang import Builder
+from kivy.app import App
 from kivy.clock import Clock
+from kivy.metrics import dp
 from kivy.properties import BooleanProperty, ListProperty
-from kivy.factory import Factory
 
 from kivymd.app import MDApp
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.button import MDFlatButton, MDRaisedButton
 from kivymd.uix.label import MDLabel
+from kivymd.uix.screen import MDScreen
 
 # Enregistre les widgets canvas pour le .kv
 from widgets import Gauge, TiltIndicator, TireDiagram  # noqa: F401
 from data import DummyDataSource
 
 import theme
+
+# Ordre des onglets (doit correspondre aux `name:` des MDBottomNavigationItem
+# dans hilux.kv) : pilote la navigation par swipe gauche/droite.
+SCREEN_ORDER = ["engine", "tilt", "tires", "dashcam"]
+SWIPE_THRESHOLD = dp(60)
+
+
+class RootScreen(MDScreen):
+    """Écran racine : ajoute le swipe gauche/droite entre les onglets.
+
+    On ne consomme jamais le touch (toujours super()) pour ne pas casser
+    les boutons/cartes ; on se contente d'observer le déplacement net
+    entre l'appui et le relâchement.
+    """
+
+    def on_touch_down(self, touch):
+        touch.ud["_swipe_x"] = touch.x
+        touch.ud["_swipe_y"] = touch.y
+        return super().on_touch_down(touch)
+
+    def on_touch_up(self, touch):
+        if "_swipe_x" in touch.ud:
+            dx = touch.x - touch.ud["_swipe_x"]
+            dy = touch.y - touch.ud["_swipe_y"]
+            if abs(dx) > SWIPE_THRESHOLD and abs(dx) > abs(dy) * 1.5:
+                App.get_running_app().swipe_tab(1 if dx < 0 else -1)
+        return super().on_touch_up(touch)
 
 
 class HiluxApp(MDApp):
@@ -60,11 +88,22 @@ class HiluxApp(MDApp):
         else:
             self.source = DummyDataSource()
 
-        root = Factory.Root()
+        root = RootScreen()
+        nav = root.ids.nav
+        nav.remove_widget(nav.ids.bottom_panel)  # footer retiré (swipe only)
         self.apply_theme()
         self._dialog = None
         Clock.schedule_interval(self._tick, 1 / 5.0)   # 5 Hz
         return root
+
+    def swipe_tab(self, direction):
+        nav = self.root.ids.nav
+        tab_manager = nav.ids.tab_manager
+        if tab_manager.transition.is_active:
+            return  # ignore le swipe tant que la transition en cours n'est pas finie
+        idx = SCREEN_ORDER.index(tab_manager.current) + direction
+        if 0 <= idx < len(SCREEN_ORDER):
+            nav.switch_tab(SCREEN_ORDER[idx])
 
     # ---------------- thème ----------------
     def apply_theme(self):
@@ -148,5 +187,4 @@ class HiluxApp(MDApp):
 
 
 if __name__ == "__main__":
-    Builder.load_file(os.path.join(os.path.dirname(__file__), "hilux.kv"))
     HiluxApp().run()
