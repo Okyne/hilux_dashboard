@@ -30,6 +30,8 @@ from kivymd.uix.label import MDLabel
 from widgets import Gauge, TiltIndicator, TireDiagram  # noqa: F401
 from data import DummyDataSource
 
+import theme
+
 
 class HiluxApp(MDApp):
     night_mode = BooleanProperty(False)
@@ -66,16 +68,15 @@ class HiluxApp(MDApp):
 
     # ---------------- thème ----------------
     def apply_theme(self):
-        t = self.theme_cls
-        self.c_bg = list(t.bg_normal)
-        self.c_surface = list(t.bg_light)
-        self.c_text = list(t.text_color)
-        self.c_text_dim = list(t.secondary_text_color)
-        self.c_accent = list(t.primary_color)
-        # les couleurs d'état restent constantes (lisibilité des alertes)
-        self.c_ok = [0.16, 0.65, 0.34, 1]
-        self.c_warn = [0.90, 0.60, 0.10, 1]
-        self.c_alarm = [0.85, 0.20, 0.20, 1]
+        p = theme.palette(self.night_mode)
+        self.c_bg = list(p["bg"])
+        self.c_surface = list(p["surface"])
+        self.c_text = list(p["text"])
+        self.c_text_dim = list(p["text_dim"])
+        self.c_accent = list(p["accent"])
+        self.c_ok = list(p["ok"])
+        self.c_warn = list(p["warn"])
+        self.c_alarm = list(p["alarm"])
 
     def toggle_night(self):
         self.night_mode = not self.night_mode
