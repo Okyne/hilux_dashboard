@@ -12,16 +12,14 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.properties import (
-    NumericProperty, StringProperty, ListProperty, BooleanProperty,
-    BoundedNumericProperty,
+    NumericProperty, StringProperty, BooleanProperty,
 )
 from kivy.graphics import (
-    Color, Line, Ellipse, Rectangle, RoundedRectangle, Mesh,
+    Color, Line, Rectangle, RoundedRectangle, Mesh,
     Rotate, PushMatrix, PopMatrix,
 )
 from kivy.metrics import dp
 from kivy.app import App
-import math
 
 
 # --------------------------------------------------------------------------- #
@@ -35,7 +33,7 @@ class _SegmentedBarGauge(Widget):
     warn = NumericProperty(1e9)
     alarm = NumericProperty(1e9)
     invert = BooleanProperty(False)   # True : danger quand value est BAS (ex. carburant)
-    segments = NumericProperty(10)
+    segments = NumericProperty(11)
 
     def __init__(self, **kw):
         super().__init__(**kw)
