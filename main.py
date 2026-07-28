@@ -168,10 +168,10 @@ class HiluxApp(MDApp):
         if "g_heading" in ids:
             ids["g_heading"].text = _cardinal(v.get("heading", 0.0))
         if "g_fuel_inst" in ids:
-            ids["g_fuel_inst"].text = "[size=28sp][b]{}[/b][/size] l/100km".format(
+            ids["g_fuel_inst"].text = "[size=28sp][b]{}[/b][/size] [size=14sp]l/km[/size]".format(
                 _fr(v["fuel_inst"]))
         if "g_fuel_avg" in ids:
-            ids["g_fuel_avg"].text = "[size=28sp][b]{}[/b][/size] l/100km".format(
+            ids["g_fuel_avg"].text = "[size=28sp][b]{}[/b][/size] [size=14sp]l/km[/size]".format(
                 _fr(v["fuel_avg"]))
         if "g_battery" in ids:
             ids["g_battery"].text = "{} [size=14sp]v[/size]".format(

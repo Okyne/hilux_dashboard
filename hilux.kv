@@ -17,6 +17,7 @@
             MDTopAppBar:
                 id: topbar
                 title: app.clock_str
+                anchor_title: "center"
                 elevation: 0
                 md_bg_color: 0, 0, 0, 0.01
                 specific_text_color: 1, 1, 1, 1
@@ -53,7 +54,7 @@
                             text_color: app.c_text_dim
                             size_hint: None, None
                             size: dp(60), dp(24)
-                            pos_hint: {"x": 0.09, "top": 0.79}
+                            pos_hint: {"x": 0.09, "top": 0.74}
                         MDLabel:
                             text: "90"
                             theme_text_color: "Custom"
@@ -74,7 +75,7 @@
                             text_color: app.c_text_dim
                             size_hint: None, None
                             size: dp(28), dp(28)
-                            pos_hint: {"x": 0.03, "y": 0.02}
+                            pos_hint: {"x": 0.09, "top": 0.32}
 
                         # -------- jauge niveau carburant (droite) --------
                         VBarGauge:
@@ -93,7 +94,7 @@
                             halign: "right"
                             size_hint: None, None
                             size: dp(60), dp(24)
-                            pos_hint: {"right": 0.90, "top": 0.79}
+                            pos_hint: {"right": 0.90, "top": 0.74}
                         MDLabel:
                             text: "1/2"
                             theme_text_color: "Custom"
@@ -116,7 +117,7 @@
                             text_color: app.c_text_dim
                             size_hint: None, None
                             size: dp(28), dp(28)
-                            pos_hint: {"right": 0.97, "y": 0.02}
+                            pos_hint: {"right": 0.90, "y": 0.28}
 
                         # -------- centre : vitesse + cap --------
                         MDLabel:
@@ -131,7 +132,7 @@
                             size: dp(200), dp(70)
                             pos_hint: {"center_x": 0.5, "top": 0.90}
                         MDLabel:
-                            text: "km/h"
+                            text: "-- km/h --"
                             theme_text_color: "Custom"
                             text_color: app.c_text_dim
                             halign: "center"
@@ -145,7 +146,7 @@
                         MDLabel:
                             id: g_heading
                             text: "N"
-                            font_style: "H4"
+                            font_style: "H3"
                             bold: True
                             theme_text_color: "Custom"
                             text_color: app.c_text
@@ -158,39 +159,39 @@
                         MDLabel:
                             id: g_fuel_inst
                             markup: True
-                            text: "[size=28sp][b]0,0[/b][/size] l/100km"
+                            text: "[size=28sp][b]0,0[/b][/size] l/km"
                             theme_text_color: "Custom"
                             text_color: app.c_text
-                            halign: "right"
+                            halign: "center"
                             size_hint: None, None
                             size: dp(200), dp(34)
-                            pos_hint: {"right": 0.80, "top": 0.62}
+                            pos_hint: {"right": 0.85, "top": 0.42}
                         MDLabel:
-                            text: "inst."
+                            text: "-- inst. --"
                             theme_text_color: "Custom"
                             text_color: app.c_text_dim
-                            halign: "right"
+                            halign: "center"
                             size_hint: None, None
                             size: dp(200), dp(20)
-                            pos_hint: {"right": 0.80, "top": 0.55}
+                            pos_hint: {"right": 0.85, "top": 0.35}
                         MDLabel:
                             id: g_fuel_avg
                             markup: True
-                            text: "[size=28sp][b]0,0[/b][/size] l/100km"
+                            text: "[size=32sp][b]0,0[/b][/size] [size=14sp]l/km[/size]"
                             theme_text_color: "Custom"
                             text_color: app.c_text
-                            halign: "right"
+                            halign: "center"
                             size_hint: None, None
                             size: dp(200), dp(34)
-                            pos_hint: {"right": 0.80, "top": 0.47}
+                            pos_hint: {"right": 0.85, "top": 0.27}
                         MDLabel:
-                            text: "moy."
+                            text: "-- moy. --"
                             theme_text_color: "Custom"
                             text_color: app.c_text_dim
-                            halign: "right"
+                            halign: "center"
                             size_hint: None, None
                             size: dp(200), dp(20)
-                            pos_hint: {"right": 0.80, "top": 0.40}
+                            pos_hint: {"right": 0.85, "top": 0.20}
 
                         # -------- ligne du bas : liquide / batterie / autonomie --------
                         MDIcon:
@@ -358,4 +359,5 @@
             text_color: 1, 1, 1, 1
             size_hint: None, None
             size: dp(70), dp(30)
-            pos_hint: {"x": 0.01, "top": 0.985}
+            pos_hint: {"x": 0.01}
+            y: topbar.center_y - self.height / 2
