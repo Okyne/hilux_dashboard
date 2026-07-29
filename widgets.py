@@ -77,22 +77,24 @@ class VBarGauge(_SegmentedBarGauge):
 
 
 class HBarGauge(_SegmentedBarGauge):
-    """Remplissage de la gauche vers la droite."""
+    """Piste pleine (style progress bar) : la portion remplie est dessinée
+    par-dessus la piste grise, sans espace entre les deux."""
 
     def _redraw(self, *_):
         self.canvas.clear()
         app = App.get_running_app()
         frac = self._fraction()
         fill = self._fill_color()
-        n = int(self.segments)
-        gap = self.width / n
-        seg_w = gap * 1
+        r = self.height / 2
+        fill_w = self.width * frac
         with self.canvas:
-            for i in range(n):
-                x = self.x + i * gap + (gap - seg_w) / 2
-                Color(*(fill if (i + 0.5) / n <= frac else app.c_text_dim))
-                RoundedRectangle(pos=(x, self.y), size=(seg_w, self.height),
-                                  radius=[seg_w / 2])
+            Color(*app.c_text_dim)
+            RoundedRectangle(pos=(self.x, self.y), size=(self.width, self.height),
+                              radius=[r])
+            if fill_w > 0:
+                Color(*fill)
+                RoundedRectangle(pos=(self.x, self.y), size=(fill_w, self.height),
+                                  radius=[r])
 
 
 # --------------------------------------------------------------------------- #

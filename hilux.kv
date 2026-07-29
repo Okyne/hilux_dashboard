@@ -204,47 +204,47 @@
                             text_color: app.c_text_dim
                             size_hint: None, None
                             size: dp(24), dp(24)
-                            pos_hint: {"x": 0.22, "y": 0.045}
+                            pos_hint: {"x": 0.255, "y": 0.08}
                         MDLabel:
                             text: "C"
                             theme_text_color: "Custom"
                             text_color: app.c_text_dim
                             size_hint: None, None
                             size: dp(20), dp(24)
-                            pos_hint: {"x": 0.27, "y": 0.045}
+                            pos_hint: {"x": 0.15, "y": 0.040}
                         HBarGauge:
                             id: g_coolant_bar
                             vmin: 40
                             vmax: 130
                             warn: 105
                             alarm: 115
-                            size_hint: 0.20, 0.045
-                            pos_hint: {"x": 0.30, "y": 0.05}
+                            size_hint: 0.18, 0.02
+                            pos_hint: {"x": 0.17, "y": 0.05}
                         MDLabel:
                             text: "H"
                             theme_text_color: "Custom"
                             text_color: app.c_text_dim
                             size_hint: None, None
                             size: dp(20), dp(24)
-                            pos_hint: {"x": 0.51, "y": 0.045}
+                            pos_hint: {"x": 0.36, "y": 0.040}
 
                         MDIcon:
                             icon: "car-battery"
                             theme_text_color: "Custom"
                             text_color: app.c_text_dim
                             size_hint: None, None
-                            size: dp(24), dp(24)
-                            pos_hint: {"x": 0.62, "y": 0.045}
+                            size: dp(30), dp(30)
+                            pos_hint: {"x": 0.45, "y": 0.045}
                         MDLabel:
                             id: g_battery
                             markup: True
-                            text: "12,7 [size=14sp]v[/size]"
+                            text: "[size=22sp]12,7[/size] [size=14sp]v[/size]"
                             bold: True
                             theme_text_color: "Custom"
                             text_color: app.c_text
                             size_hint: None, None
                             size: dp(90), dp(24)
-                            pos_hint: {"x": 0.66, "y": 0.045}
+                            pos_hint: {"x": 0.49, "y": 0.045}
 
                         MDIcon:
                             icon: "gas-station"
@@ -252,7 +252,7 @@
                             text_color: app.c_text_dim
                             size_hint: None, None
                             size: dp(24), dp(24)
-                            pos_hint: {"x": 0.80, "y": 0.045}
+                            pos_hint: {"x": 0.7, "y": 0.045}
                         MDLabel:
                             id: g_range
                             markup: True
@@ -262,7 +262,7 @@
                             text_color: app.c_text
                             size_hint: None, None
                             size: dp(90), dp(24)
-                            pos_hint: {"x": 0.84, "y": 0.045}
+                            pos_hint: {"x": 0.74, "y": 0.045}
 
                 # ---------------- Écran 2 : inclinaison ----------------
                 MDBottomNavigationItem:

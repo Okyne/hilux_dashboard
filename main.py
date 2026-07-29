@@ -174,10 +174,10 @@ class HiluxApp(MDApp):
             ids["g_fuel_avg"].text = "[size=28sp][b]{}[/b][/size] [size=14sp]l/km[/size]".format(
                 _fr(v["fuel_avg"]))
         if "g_battery" in ids:
-            ids["g_battery"].text = "{} [size=14sp]v[/size]".format(
+            ids["g_battery"].text = "[size=25sp][b]{}[/b][/size]  [size=16sp]v[/size]".format(
                 _fr(v.get("battery_voltage", 0.0)))
         if "g_range" in ids:
-            ids["g_range"].text = "{:.0f} [size=14sp]km[/size]".format(
+            ids["g_range"].text = "[size=25sp][b]{:.0f}[/b][/size] [size=16sp]km[/size]".format(
                 v.get("fuel_range", 0.0))
         if "roll" in ids:
             ids["roll"].angle = v["roll"]
