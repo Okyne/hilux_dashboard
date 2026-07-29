@@ -28,7 +28,7 @@ from kivymd.uix.button import MDFlatButton, MDRaisedButton
 from kivymd.uix.screen import MDScreen
 
 # Enregistre les widgets canvas pour le .kv
-from widgets import VBarGauge, HBarGauge, HeadingArrow, TiltIndicator, RollFanGauge, TireDiagram  # noqa: F401
+from widgets import VBarGauge, HBarGauge, HeadingArrow, RollFanGauge, TireDiagram  # noqa: F401
 from data import DummyDataSource
 
 import theme
@@ -163,10 +163,14 @@ class HiluxApp(MDApp):
         if "g_ext" in ids:
             ids["g_ext"].text = "{:.0f}°".format(v["ext_temp"])
         self.clock_str = time.strftime("%H:%M")
-        if "g_speed" in ids:
-            ids["g_speed"].text = "{:.0f}".format(v.get("speed", 0.0))
-        if "g_heading" in ids:
-            ids["g_heading"].text = _cardinal(v.get("heading", 0.0))
+        speed_text = "{:.0f}".format(v.get("speed", 0.0))
+        for wid in ("g_speed", "g_speed2"):
+            if wid in ids:
+                ids[wid].text = speed_text
+        heading_text = _cardinal(v.get("heading", 0.0))
+        for wid in ("g_heading", "g_heading2"):
+            if wid in ids:
+                ids[wid].text = heading_text
         if "g_fuel_inst" in ids:
             ids["g_fuel_inst"].text = "[size=28sp][b]{}[/b][/size] [size=14sp]l/km[/size]".format(
                 _fr(v["fuel_inst"]))
@@ -179,10 +183,14 @@ class HiluxApp(MDApp):
         if "g_range" in ids:
             ids["g_range"].text = "[size=25sp][b]{:.0f}[/b][/size] [size=16sp]km[/size]".format(
                 v.get("fuel_range", 0.0))
-        if "roll" in ids:
-            ids["roll"].angle = v["roll"]
-        if "pitch" in ids:
-            ids["pitch"].angle = v["pitch"]
+        roll_val = v.get("roll", 0.0)
+        for wid in ("roll_fan_l", "roll_fan_r"):
+            if wid in ids:
+                ids[wid].angle = roll_val
+        pitch_val = v.get("pitch", 0.0)
+        for wid in ("pitch_bar_1", "pitch_bar_2"):
+            if wid in ids:
+                ids[wid].value = pitch_val
         if "tires" in ids:
             t = ids["tires"]
             t.fl, t.fr, t.rl, t.rr = (

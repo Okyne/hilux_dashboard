@@ -1,9 +1,10 @@
 """
 Widgets personnalisés dessinés au canvas (légers pour le Pi 3) :
-- VBarGauge      : jauge verticale segmentée (huile, niveau carburant — écran 1)
+- VBarGauge      : jauge verticale segmentée (huile, niveau carburant — écran 1 ;
+                   tangage, en colonnes miroir — écran 2)
 - HBarGauge      : jauge horizontale segmentée (liquide de refroidissement — écran 1)
-- HeadingArrow   : flèche de cap fixe (écran 1)
-- TiltIndicator  : silhouette qui s'incline selon roll/pitch (écran 2)
+- HeadingArrow   : flèche de cap fixe (écran 1, écran 2)
+- RollFanGauge   : aile en éventail pour le roulis, en miroir gauche/droite (écran 2)
 - TireDiagram    : vue de dessus du véhicule + 4 pressions colorées (écran 3)
 - TopBar         : barre globale (navigation + nuit / settings / shutdown)
 """
@@ -180,39 +181,6 @@ class RollFanGauge(Widget):
                 tip_points.extend([x_tip, y])
             Color(*app.c_text_dim)
             Line(points=tip_points, width=dp(2))
-
-
-# --------------------------------------------------------------------------- #
-#  Indicateur d'inclinaison
-# --------------------------------------------------------------------------- #
-class TiltIndicator(Widget):
-    """Affiche roll (latéral) ou pitch (longitudinal) via une silhouette."""
-    angle = NumericProperty(0.0)     # degrés
-    axis = StringProperty("roll")    # "roll" ou "pitch"
-
-    def __init__(self, **kw):
-        super().__init__(**kw)
-        self.bind(pos=self._redraw, size=self._redraw, angle=self._redraw)
-
-    def _redraw(self, *_):
-        self.canvas.clear()
-        app = App.get_running_app()
-        cx, cy = self.center_x, self.center_y
-        half = min(self.width, self.height) * 0.32
-        with self.canvas:
-            PushMatrix()
-            Rotate(angle=-self.angle, origin=(cx, cy))
-            # ligne d'horizon
-            col = app.c_alarm if abs(self.angle) > 25 else (
-                app.c_warn if abs(self.angle) > 15 else app.c_ok)
-            Color(*col)
-            Line(points=[cx - half, cy, cx + half, cy], width=dp(3))
-            # marqueur de "toit" du véhicule
-            Line(points=[cx, cy, cx, cy + half * 0.5], width=dp(3))
-            PopMatrix()
-            # repère fixe central
-            Color(*app.c_text_dim)
-            Line(circle=(cx, cy, dp(4)), width=dp(2))
 
 
 # --------------------------------------------------------------------------- #
