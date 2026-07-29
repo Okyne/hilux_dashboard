@@ -31,8 +31,8 @@
                 # NoTransition avoids MDBottomNavigation's default FadeTransition
                 # (FBO/shader-based screen compositing). That transition leaves stale
                 # GPU framebuffer content visible through transparent gaps in sparse
-                # tab layouts (e.g. the tilt tab) after switching tabs — see
-                # task-2-report.md for the root-cause investigation.
+                # tab layouts (e.g. the tilt tab) after switching tabs — confirmed via
+                # screenshots at 0.8s/3s/7.5s post-switch and across every tab pairing.
                 transition: NoTransition
 
                 # ---------------- Écran 1 : moteur ----------------
