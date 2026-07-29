@@ -28,7 +28,7 @@ from kivymd.uix.button import MDFlatButton, MDRaisedButton
 from kivymd.uix.screen import MDScreen
 
 # Enregistre les widgets canvas pour le .kv
-from widgets import VBarGauge, HBarGauge, HeadingArrow, TiltIndicator, TireDiagram  # noqa: F401
+from widgets import VBarGauge, HBarGauge, HeadingArrow, TiltIndicator, RollFanGauge, TireDiagram  # noqa: F401
 from data import DummyDataSource
 
 import theme

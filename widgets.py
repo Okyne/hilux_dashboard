@@ -20,6 +20,7 @@ from kivy.graphics import (
 )
 from kivy.metrics import dp
 from kivy.app import App
+from math import sin, pi
 
 
 # --------------------------------------------------------------------------- #
@@ -122,6 +123,63 @@ class HeadingArrow(Widget):
                 indices=[0, 1, 2],
                 mode="triangles",
             )
+
+
+# --------------------------------------------------------------------------- #
+#  Jauge en éventail (roulis, ailes miroir)
+# --------------------------------------------------------------------------- #
+class RollFanGauge(Widget):
+    """Une aile de jauge papillon : barres segmentées radiant depuis une
+    ligne verticale de référence (0°) jusqu'à un arc gradué (+-vmax).
+    Deux instances (mirror=False/True) partagent la même valeur `angle`
+    pour former l'effet symétrique complet (écran 2)."""
+    angle = NumericProperty(0.0)
+    mirror = BooleanProperty(False)
+    vmax = NumericProperty(45.0)
+    warn = NumericProperty(15.0)
+    alarm = NumericProperty(25.0)
+    rows = NumericProperty(17)
+
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        for p in ("pos", "size", "angle"):
+            self.bind(**{p: self._redraw})
+
+    def _fill_color(self):
+        app = App.get_running_app()
+        v = abs(self.angle)
+        if v >= self.alarm:
+            return app.c_alarm
+        if v >= self.warn:
+            return app.c_warn
+        return app.c_ok
+
+    def _redraw(self, *_):
+        self.canvas.clear()
+        app = App.get_running_app()
+        n = int(self.rows)
+        fill = self._fill_color()
+        anchor_x = self.x if self.mirror else self.x + self.width
+        sign = 1 if self.mirror else -1
+        thickness = (self.height / (n - 1)) * 0.4
+        tip_points = []
+        with self.canvas:
+            for i in range(n):
+                row_angle = -self.vmax + i * (2 * self.vmax) / (n - 1)
+                y = self.y + i * self.height / (n - 1)
+                frac = abs(row_angle) / self.vmax
+                bar_len = max(self.width * sin(frac * pi / 2), 1)
+                lit = abs(row_angle) <= abs(self.angle)
+                Color(*(fill if lit else app.c_text_dim))
+                x_tip = anchor_x + sign * bar_len
+                RoundedRectangle(
+                    pos=(min(anchor_x, x_tip), y - thickness / 2),
+                    size=(bar_len, thickness),
+                    radius=[thickness / 2],
+                )
+                tip_points.extend([x_tip, y])
+            Color(*app.c_text_dim)
+            Line(points=tip_points, width=dp(2))
 
 
 # --------------------------------------------------------------------------- #
