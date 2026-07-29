@@ -1,3 +1,5 @@
+#:import NoTransition kivy.uix.screenmanager.NoTransition
+
 # Interface Material Design (KivyMD 1.1.1).
 # Les jauges/inclinomètre/pneus restent des widgets canvas (légers).
 # Les couleurs canvas pointent vers app.c_* (dérivées de theme_cls).
@@ -26,6 +28,12 @@
             MDBottomNavigation:
                 id: nav
                 #panel_color: app.theme_cls.primary_color
+                # NoTransition avoids MDBottomNavigation's default FadeTransition
+                # (FBO/shader-based screen compositing). That transition leaves stale
+                # GPU framebuffer content visible through transparent gaps in sparse
+                # tab layouts (e.g. the tilt tab) after switching tabs — see
+                # task-2-report.md for the root-cause investigation.
+                transition: NoTransition
 
                 # ---------------- Écran 1 : moteur ----------------
                 MDBottomNavigationItem:
@@ -271,9 +279,6 @@
                     icon: "angle-acute"
                     FloatLayout:
                         id: tilt_root
-                        Image:
-                            source: app.bg_image
-                            fit_mode: "cover"
 
                         # -------- roulis : aile gauche --------
                         RollFanGauge:
