@@ -280,6 +280,10 @@
                     FloatLayout:
                         id: tilt_root
 
+                        Image:
+                            source: app.bg_image
+                            fit_mode: "cover"
+
                         # -------- roulis : aile gauche --------
                         RollFanGauge:
                             id: roll_fan_l
@@ -309,14 +313,6 @@
                             pos_hint: {"right": 0.335, "y": 0.07}
 
                         # -------- tangage : colonnes centrales --------
-                        VBarGauge:
-                            id: pitch_bar_1
-                            vmin: -45
-                            vmax: 45
-                            warn: 15
-                            alarm: 25
-                            size_hint: 0.035, 0.6
-                            pos_hint: {"x": 0.34, "center_y": 0.48}
                         VBarGauge:
                             id: pitch_bar_2
                             vmin: -45
@@ -358,7 +354,7 @@
                         HeadingArrow:
                             size_hint: None, None
                             size: dp(40), dp(40)
-                            pos_hint: {"center_x": 0.84, "top": 0.80}
+                            pos_hint: {"center_x": 0.84, "top": 0.85}
                         MDLabel:
                             id: g_heading2
                             text: "N"
@@ -369,7 +365,7 @@
                             halign: "center"
                             size_hint: None, None
                             size: dp(120), dp(40)
-                            pos_hint: {"center_x": 0.84, "center_y": 0.55}
+                            pos_hint: {"center_x": 0.84, "center_y": 0.68}
                         MDLabel:
                             id: g_speed2
                             text: "0"
@@ -380,7 +376,7 @@
                             halign: "center"
                             size_hint: None, None
                             size: dp(160), dp(60)
-                            pos_hint: {"center_x": 0.84, "center_y": 0.35}
+                            pos_hint: {"center_x": 0.84, "center_y": 0.40}
                         MDLabel:
                             text: "-- km/h --"
                             theme_text_color: "Custom"
@@ -388,7 +384,7 @@
                             halign: "center"
                             size_hint: None, None
                             size: dp(160), dp(24)
-                            pos_hint: {"center_x": 0.84, "y": 0.15}
+                            pos_hint: {"center_x": 0.84, "y": 0.30}
 
                 # ---------------- Écran 3 : pneus ----------------
                 MDBottomNavigationItem:
