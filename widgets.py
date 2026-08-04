@@ -61,6 +61,7 @@ class _SegmentedBarGauge(Widget):
 
 class VBarGauge(_SegmentedBarGauge):
     """Remplissage du bas vers le haut."""
+    framed = BooleanProperty(False)  # cadre 2 lignes verticales (écran tilt)
 
     def _redraw(self, *_):
         self.canvas.clear()
@@ -76,6 +77,10 @@ class VBarGauge(_SegmentedBarGauge):
                 Color(*(fill if (i + 0.5) / n <= frac else app.c_text_dim))
                 RoundedRectangle(pos=(self.x, y), size=(self.width, seg_h),
                                   radius=[seg_h / 2])
+            if self.framed:
+                Color(*app.c_text_dim)
+                Line(points=[self.x, self.y, self.x, self.top], width=dp(1))
+                Line(points=[self.right, self.y, self.right, self.top], width=dp(1))
 
 
 class HBarGauge(_SegmentedBarGauge):
