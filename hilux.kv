@@ -291,26 +291,12 @@
                             size_hint: 0.22, 0.68
                             pos_hint: {"right": 0.32, "center_y": 0.48}
                         MDLabel:
-                            text: "45"
+                            text: "{:.0f}".format(-roll_fan_l.angle)
                             theme_text_color: "Custom"
-                            text_color: app.c_text_dim
-                            size_hint: None, None
-                            size: dp(50), dp(24)
-                            pos_hint: {"right": 0.335, "top": 0.89}
-                        MDLabel:
-                            text: "0"
-                            theme_text_color: "Custom"
-                            text_color: app.c_text_dim
+                            text_color: app.c_text
                             size_hint: None, None
                             size: dp(50), dp(24)
                             pos_hint: {"right": 0.30, "center_y": 0.48}
-                        MDLabel:
-                            text: "-45"
-                            theme_text_color: "Custom"
-                            text_color: app.c_text_dim
-                            size_hint: None, None
-                            size: dp(50), dp(24)
-                            pos_hint: {"right": 0.335, "y": 0.07}
 
                         # -------- tangage : colonnes centrales --------
                         VBarGauge:
@@ -319,8 +305,17 @@
                             vmax: 45
                             warn: 15
                             alarm: 25
+                            framed: True
                             size_hint: 0.035, 0.6
                             pos_hint: {"x": 0.40, "center_y": 0.48}
+                        MDLabel:
+                            text: "{:.0f}".format(pitch_bar_2.value)
+                            theme_text_color: "Custom"
+                            text_color: app.c_text
+                            halign: "center"
+                            size_hint: None, None
+                            size: dp(60), dp(24)
+                            pos_hint: {"center_x": 0.4175, "y": 0.79}
 
                         # -------- roulis : aile droite (miroir) --------
                         RollFanGauge:
@@ -329,26 +324,12 @@
                             size_hint: 0.22, 0.68
                             pos_hint: {"x": 0.46, "center_y": 0.48}
                         MDLabel:
-                            text: "45"
+                            text: "{:.0f}".format(roll_fan_r.angle)
                             theme_text_color: "Custom"
-                            text_color: app.c_text_dim
-                            size_hint: None, None
-                            size: dp(50), dp(24)
-                            pos_hint: {"x": 0.665, "top": 0.89}
-                        MDLabel:
-                            text: "0"
-                            theme_text_color: "Custom"
-                            text_color: app.c_text_dim
+                            text_color: app.c_text
                             size_hint: None, None
                             size: dp(50), dp(24)
                             pos_hint: {"x": 0.70, "center_y": 0.48}
-                        MDLabel:
-                            text: "-45"
-                            theme_text_color: "Custom"
-                            text_color: app.c_text_dim
-                            size_hint: None, None
-                            size: dp(50), dp(24)
-                            pos_hint: {"x": 0.665, "y": 0.07}
 
                         # -------- panneau droit : cap + vitesse --------
                         HeadingArrow:
