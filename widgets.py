@@ -21,7 +21,7 @@ from kivy.graphics import (
 )
 from kivy.metrics import dp
 from kivy.app import App
-from math import sin, pi
+from math import cos, pi
 
 
 # --------------------------------------------------------------------------- #
@@ -155,22 +155,28 @@ class RollFanGauge(Widget):
             return app.c_warn
         return app.c_ok
 
+    def _is_active(self):
+        """mirror=True (roll_fan_r, droite) s'allume quand angle>0 (penche à
+        droite) ; mirror=False (roll_fan_l, gauche) quand angle<0 (gauche) —
+        convention de signe de `roll` définie dans data.py."""
+        return (self.angle > 0) == self.mirror
+
     def _redraw(self, *_):
         self.canvas.clear()
         app = App.get_running_app()
         n = int(self.rows)
         fill = self._fill_color()
+        active = self._is_active()
         anchor_x = self.x if self.mirror else self.x + self.width
         sign = 1 if self.mirror else -1
         thickness = (self.height / (n - 1)) * 0.4
-        tip_points = []
         with self.canvas:
             for i in range(n):
                 row_angle = -self.vmax + i * (2 * self.vmax) / (n - 1)
                 y = self.y + i * self.height / (n - 1)
                 frac = abs(row_angle) / self.vmax
-                bar_len = max(self.width * sin(frac * pi / 2), 1)
-                lit = abs(row_angle) <= abs(self.angle)
+                bar_len = max(self.width * cos(frac * pi / 2), 1)
+                lit = active and abs(row_angle) <= abs(self.angle)
                 Color(*(fill if lit else app.c_text_dim))
                 x_tip = anchor_x + sign * bar_len
                 RoundedRectangle(
@@ -178,9 +184,6 @@ class RollFanGauge(Widget):
                     size=(bar_len, thickness),
                     radius=[thickness / 2],
                 )
-                tip_points.extend([x_tip, y])
-            Color(*app.c_text_dim)
-            Line(points=tip_points, width=dp(2))
 
 
 # --------------------------------------------------------------------------- #
