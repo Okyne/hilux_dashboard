@@ -290,13 +290,14 @@
                             mirror: False
                             size_hint: 0.22, 0.68
                             pos_hint: {"right": 0.32, "center_y": 0.48}
+                        # valeur miroir (voir RollFanGauge._is_active / data.py pour la convention de signe)
                         MDLabel:
-                            text: "{:.0f}".format(-roll_fan_l.angle)
+                            text: "{:.0f}".format(round(-roll_fan_l.angle) + 0.0)
                             theme_text_color: "Custom"
                             text_color: app.c_text
                             size_hint: None, None
                             size: dp(50), dp(24)
-                            pos_hint: {"right": 0.30, "center_y": 0.48}
+                            pos_hint: {"right": 0.08, "center_y": 0.48}
 
                         # -------- tangage : colonnes centrales --------
                         VBarGauge:
@@ -309,7 +310,7 @@
                             size_hint: 0.035, 0.6
                             pos_hint: {"x": 0.40, "center_y": 0.48}
                         MDLabel:
-                            text: "{:.0f}".format(pitch_bar_2.value)
+                            text: "{:.0f}".format(round(pitch_bar_2.value) + 0.0)
                             theme_text_color: "Custom"
                             text_color: app.c_text
                             halign: "center"
@@ -324,7 +325,7 @@
                             size_hint: 0.22, 0.68
                             pos_hint: {"x": 0.46, "center_y": 0.48}
                         MDLabel:
-                            text: "{:.0f}".format(roll_fan_r.angle)
+                            text: "{:.0f}".format(round(roll_fan_r.angle) + 0.0)
                             theme_text_color: "Custom"
                             text_color: app.c_text
                             size_hint: None, None

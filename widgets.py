@@ -4,7 +4,7 @@ Widgets personnalisés dessinés au canvas (légers pour le Pi 3) :
                    tangage, en colonnes miroir — écran 2)
 - HBarGauge      : jauge horizontale segmentée (liquide de refroidissement — écran 1)
 - HeadingArrow   : flèche de cap fixe (écran 1, écran 2)
-- RollFanGauge   : aile en éventail pour le roulis, en miroir gauche/droite (écran 2)
+- RollFanGauge   : aile en éventail pour le roulis, une seule aile active à la fois selon le sens (écran 2)
 - TireDiagram    : vue de dessus du véhicule + 4 pressions colorées (écran 3)
 - TopBar         : barre globale (navigation + nuit / settings / shutdown)
 """
@@ -79,8 +79,8 @@ class VBarGauge(_SegmentedBarGauge):
                                   radius=[seg_h / 2])
             if self.framed:
                 Color(*app.c_text_dim)
-                Line(points=[self.x, self.y, self.x, self.top], width=dp(1))
-                Line(points=[self.right, self.y, self.right, self.top], width=dp(1))
+                Line(points=[self.x, self.y, self.x, self.y + self.height], width=dp(1))
+                Line(points=[self.x + self.width, self.y, self.x + self.width, self.y + self.height], width=dp(1))
 
 
 class HBarGauge(_SegmentedBarGauge):
@@ -135,10 +135,10 @@ class HeadingArrow(Widget):
 #  Jauge en éventail (roulis, ailes miroir)
 # --------------------------------------------------------------------------- #
 class RollFanGauge(Widget):
-    """Une aile de jauge papillon : barres segmentées radiant depuis une
-    ligne verticale de référence (0°) jusqu'à un arc gradué (+-vmax).
-    Deux instances (mirror=False/True) partagent la même valeur `angle`
-    pour former l'effet symétrique complet (écran 2)."""
+    """Une aile en forme de croissant : barres les plus longues au centre
+    vertical, les plus courtes en haut/bas. Deux instances (mirror=False/True)
+    partagent la même valeur `angle`, mais une seule s'allume à la fois selon
+    son signe — voir `_is_active()` pour la convention exacte (écran 2)."""
     angle = NumericProperty(0.0)
     mirror = BooleanProperty(False)
     vmax = NumericProperty(45.0)
