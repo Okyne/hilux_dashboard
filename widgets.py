@@ -159,6 +159,8 @@ class RollFanGauge(Widget):
         """mirror=True (roll_fan_r, droite) s'allume quand angle>0 (penche à
         droite) ; mirror=False (roll_fan_l, gauche) quand angle<0 (gauche) —
         convention de signe de `roll` définie dans data.py."""
+        if self.angle == 0:
+            return False
         return (self.angle > 0) == self.mirror
 
     def _redraw(self, *_):
