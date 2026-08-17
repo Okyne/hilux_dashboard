@@ -7,6 +7,8 @@ Widgets personnalisés dessinés au canvas (légers pour le Pi 3) :
 - TireDiagram    : vue de dessus du véhicule + 4 pressions colorées (écran 3)
 - TopBar         : barre globale (navigation + nuit / settings / shutdown)
 """
+import math
+
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -125,36 +127,74 @@ class HeadingArrow(Widget):
 
 
 # --------------------------------------------------------------------------- #
-#  Indicateur d'inclinaison
+#  Indicateur d'inclinaison (cadran façon clinomètre)
 # --------------------------------------------------------------------------- #
 class TiltIndicator(Widget):
-    """Affiche roll (latéral) ou pitch (longitudinal) via une silhouette."""
-    angle = NumericProperty(0.0)     # degrés
+    """Cadran circulaire roll (latéral) ou pitch (longitudinal) : anneau
+    bicolore haut/bas gradué de 0 (horizontale) à `vmax` (verticale), et une
+    aiguille traversante qui tourne avec l'angle. L'échelle est volontairement
+    étirée (0..vmax mappé sur 0..90° de rotation) plutôt que 1:1, pour rester
+    lisible aux petits angles réellement rencontrés en conduite."""
+    angle = NumericProperty(0.0)     # degrés, valeur brute du capteur
     axis = StringProperty("roll")    # "roll" ou "pitch"
+    vmax = NumericProperty(40.0)     # valeur au bord du cadran (haut/bas)
+    warn = NumericProperty(15.0)
+    alarm = NumericProperty(25.0)
+    ticks = NumericProperty(4)       # graduations par quart de cadran (hors 0)
 
     def __init__(self, **kw):
         super().__init__(**kw)
         self.bind(pos=self._redraw, size=self._redraw, angle=self._redraw)
 
+    def _needle_color(self):
+        app = App.get_running_app()
+        a = abs(self.angle)
+        if a > self.alarm:
+            return app.c_alarm
+        if a > self.warn:
+            return app.c_warn
+        return app.c_ok
+
     def _redraw(self, *_):
         self.canvas.clear()
         app = App.get_running_app()
         cx, cy = self.center_x, self.center_y
-        half = min(self.width, self.height) * 0.32
+        r = min(self.width, self.height) * 0.46
         with self.canvas:
-            PushMatrix()
-            Rotate(angle=-self.angle, origin=(cx, cy))
-            # ligne d'horizon
-            col = app.c_alarm if abs(self.angle) > 25 else (
-                app.c_warn if abs(self.angle) > 15 else app.c_ok)
-            Color(*col)
-            Line(points=[cx - half, cy, cx + half, cy], width=dp(3))
-            # marqueur de "toit" du véhicule
-            Line(points=[cx, cy, cx, cy + half * 0.5], width=dp(3))
-            PopMatrix()
-            # repère fixe central
+            # anneau : moitié haute (montée / roulis droit) et basse (descente
+            # / roulis gauche) dans deux teintes distinctes. Line(circle=...)
+            # balaie les angles dans le sens horaire depuis l'est : 0-180 est
+            # donc la moitié BASSE et 180-360 la moitié HAUTE.
+            Color(*app.c_accent)
+            Line(circle=(cx, cy, r, 0, 180), width=dp(3))
+            Color(*app.c_warn)
+            Line(circle=(cx, cy, r, 180, 360), width=dp(3))
+
+            # graduations réparties tous les 90/ticks degrés autour du cadran
+            n = max(1, int(self.ticks))
+            tick_len = r * 0.12
+            for i in range(4 * n):
+                theta = math.radians(i * (90.0 / n))
+                col = app.c_warn if math.sin(theta) >= 0 else app.c_accent
+                Color(*col)
+                x0, y0 = cx + r * math.cos(theta), cy + r * math.sin(theta)
+                x1 = cx + (r - tick_len) * math.cos(theta)
+                y1 = cy + (r - tick_len) * math.sin(theta)
+                Line(points=[x0, y0, x1, y1], width=dp(1.5))
+
+            # ligne de référence horizontale (0)
             Color(*app.c_text_dim)
-            Line(circle=(cx, cy, dp(4)), width=dp(2))
+            Line(points=[cx - r, cy, cx + r, cy], width=dp(1))
+
+            # aiguille traversante : échelle étirée 0..vmax -> 0..90°
+            # (signe inversé : un roulis/tangage positif doit faire tourner
+            # l'aiguille visuellement dans le même sens que l'horizon réel)
+            span = -90.0 * max(-self.vmax, min(self.vmax, self.angle)) / self.vmax
+            Color(*self._needle_color())
+            PushMatrix()
+            Rotate(angle=span, origin=(cx, cy))
+            Line(points=[cx - r * 0.92, cy, cx + r * 0.92, cy], width=dp(3))
+            PopMatrix()
 
 
 # --------------------------------------------------------------------------- #

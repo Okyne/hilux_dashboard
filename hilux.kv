@@ -284,7 +284,7 @@
                             source: app.bg_image
                             fit_mode: "cover"
 
-                        # -------- roulis / tangage : silhouettes --------
+                        # -------- roulis / tangage : cadrans façon clinomètre --------
                         MDBoxLayout:
                             orientation: "horizontal"
                             spacing: dp(12)
@@ -293,39 +293,107 @@
                             pos_hint: {"x": 0.0, "center_y": 0.5}
                             MDCard:
                                 orientation: "vertical"
-                                md_bg_color: app.c_surface[0], app.c_surface[1], app.c_surface[2], 0.85
-                                radius: [dp(16),]
+                                md_bg_color: 0, 0, 0, 0
+                                elevation: 0
                                 padding: dp(8)
                                 MDLabel:
                                     text: "Roulis (lateral)"
                                     halign: "center"
-                                    theme_text_color: "Secondary"
-                                    size_hint_y: 0.15
-                                TiltIndicator:
-                                    id: roll
-                                    axis: "roll"
+                                    theme_text_color: "Custom"
+                                    text_color: app.c_text_dim
+                                    size_hint_y: 0.12
+                                MDBoxLayout:
+                                    orientation: "horizontal"
+                                    size_hint_y: 0.68
+                                    MDLabel:
+                                        text: "40\n30\n20\n10\n0\n10\n20\n30\n40"
+                                        halign: "center"
+                                        valign: "middle"
+                                        text_size: self.size
+                                        font_size: sp(10)
+                                        theme_text_color: "Custom"
+                                        text_color: app.c_text_dim
+                                        size_hint_x: 0.16
+                                    FloatLayout:
+                                        size_hint_x: 0.68
+                                        TiltIndicator:
+                                            id: roll
+                                            axis: "roll"
+                                            size_hint: 1, 1
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                        MDIcon:
+                                            icon: "car-back"
+                                            font_size: sp(56)
+                                            theme_text_color: "Custom"
+                                            text_color: app.c_text_dim
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                    MDLabel:
+                                        text: "40\n30\n20\n10\n0\n10\n20\n30\n40"
+                                        halign: "center"
+                                        valign: "middle"
+                                        text_size: self.size
+                                        font_size: sp(10)
+                                        theme_text_color: "Custom"
+                                        text_color: app.c_text_dim
+                                        size_hint_x: 0.16
                                 MDLabel:
-                                    text: "{:+.0f} deg".format(round(roll.angle) + 0.0)
+                                    text: "{:+.0f}°".format(round(roll.angle) + 0.0)
                                     halign: "center"
                                     font_style: "H4"
+                                    theme_text_color: "Custom"
+                                    text_color: app.c_text
                                     size_hint_y: 0.2
                             MDCard:
                                 orientation: "vertical"
-                                md_bg_color: app.c_surface[0], app.c_surface[1], app.c_surface[2], 0.85
-                                radius: [dp(16),]
+                                md_bg_color: 0, 0, 0, 0
+                                elevation: 0
                                 padding: dp(8)
                                 MDLabel:
                                     text: "Tangage (avant/arriere)"
                                     halign: "center"
-                                    theme_text_color: "Secondary"
-                                    size_hint_y: 0.15
-                                TiltIndicator:
-                                    id: pitch
-                                    axis: "pitch"
+                                    theme_text_color: "Custom"
+                                    text_color: app.c_text_dim
+                                    size_hint_y: 0.12
+                                MDBoxLayout:
+                                    orientation: "horizontal"
+                                    size_hint_y: 0.68
+                                    MDLabel:
+                                        text: "40\n30\n20\n10\n0\n10\n20\n30\n40"
+                                        halign: "center"
+                                        valign: "middle"
+                                        text_size: self.size
+                                        font_size: sp(10)
+                                        theme_text_color: "Custom"
+                                        text_color: app.c_text_dim
+                                        size_hint_x: 0.16
+                                    FloatLayout:
+                                        size_hint_x: 0.68
+                                        TiltIndicator:
+                                            id: pitch
+                                            axis: "pitch"
+                                            size_hint: 1, 1
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                        MDIcon:
+                                            icon: "car-side"
+                                            font_size: sp(56)
+                                            theme_text_color: "Custom"
+                                            text_color: app.c_text_dim
+                                            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                                    MDLabel:
+                                        text: "40\n30\n20\n10\n0\n10\n20\n30\n40"
+                                        halign: "center"
+                                        valign: "middle"
+                                        text_size: self.size
+                                        font_size: sp(10)
+                                        theme_text_color: "Custom"
+                                        text_color: app.c_text_dim
+                                        size_hint_x: 0.16
                                 MDLabel:
-                                    text: "{:+.0f} deg".format(round(pitch.angle) + 0.0)
+                                    text: "{:+.0f}°".format(round(pitch.angle) + 0.0)
                                     halign: "center"
                                     font_style: "H4"
+                                    theme_text_color: "Custom"
+                                    text_color: app.c_text
                                     size_hint_y: 0.2
 
                         # -------- panneau droit : cap + vitesse --------
