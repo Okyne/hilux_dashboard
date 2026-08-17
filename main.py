@@ -107,6 +107,7 @@ class HiluxApp(MDApp):
         root = RootScreen()
         nav = root.ids.nav
         nav.remove_widget(nav.ids.bottom_panel)  # footer retiré (swipe only)
+        self._tabs = [nav.ids.tab_manager.get_screen(n) for n in SCREEN_ORDER]
 
         self._topbar = root.ids.topbar
         # MDTopAppBar centers the title in the space left between its two
@@ -160,6 +161,11 @@ class HiluxApp(MDApp):
         # interne) : on la repasse en transparent juste après, sinon la
         # barre redevient bleue/ambrée à chaque toggle_night().
         self._topbar.md_bg_color = (0, 0, 0, 0.01)
+        # Idem pour chaque onglet : MDTab (base de MDBottomNavigationItem)
+        # réaligne md_bg_color sur theme_cls.bg_normal au même changement de
+        # thème, ce qui rendrait le fond de l'appli invisible sous l'onglet.
+        for tab in self._tabs:
+            tab.md_bg_color = (0, 0, 0, 0)
 
     def toggle_night(self):
         self.night_mode = not self.night_mode
