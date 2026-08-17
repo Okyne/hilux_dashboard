@@ -32,8 +32,10 @@ class DummyDataSource:
             # écran 2 — inclinaison
             "roll": 0.0,            # deg (latéral +droite / -gauche)
             "pitch": 0.0,           # deg (+avant piqué / -arrière)
-            # écran 3 — pneus (bar)
+            # écran 3 — pneus (bar / °C)
             "tire_fl": 0.0, "tire_fr": 0.0, "tire_rl": 0.0, "tire_rr": 0.0,
+            "tire_fl_temp": 0.0, "tire_fr_temp": 0.0,
+            "tire_rl_temp": 0.0, "tire_rr_temp": 0.0,
         }
 
     def update(self, *_):
@@ -56,3 +58,7 @@ class DummyDataSource:
         v["tire_fr"] = 2.5 + 0.05 * math.cos(t / 9)
         v["tire_rl"] = 2.8 + 0.05 * math.sin(t / 13)
         v["tire_rr"] = 2.2 + 0.05 * math.cos(t / 12)  # volontairement bas -> alerte
+        v["tire_fl_temp"] = 28 + 4 * math.sin(t / 17)
+        v["tire_fr_temp"] = 29 + 4 * math.cos(t / 14)
+        v["tire_rl_temp"] = 30 + 4 * math.sin(t / 19)
+        v["tire_rr_temp"] = 33 + 4 * math.cos(t / 16)  # roue basse -> tourne plus chaud

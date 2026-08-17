@@ -20,6 +20,7 @@ KEYS = [
     "oil_temp", "coolant_temp", "boost", "fuel_avg", "fuel_inst", "ext_temp",
     "roll", "pitch",
     "tire_fl", "tire_fr", "tire_rl", "tire_rr",
+    "tire_fl_temp", "tire_fr_temp", "tire_rl_temp", "tire_rr_temp",
 ]
 
 

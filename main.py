@@ -28,7 +28,9 @@ from kivymd.uix.button import MDFlatButton, MDRaisedButton
 from kivymd.uix.screen import MDScreen
 
 # Enregistre les widgets canvas pour le .kv
-from widgets import VBarGauge, HBarGauge, HeadingArrow, RollFanGauge, TireDiagram  # noqa: F401
+from widgets import (  # noqa: F401
+    VBarGauge, HBarGauge, HeadingArrow, TiltIndicator, TireDiagram, TireFanGauge,
+)
 from data import DummyDataSource
 
 import theme
@@ -183,18 +185,17 @@ class HiluxApp(MDApp):
         if "g_range" in ids:
             ids["g_range"].text = "[size=25sp][b]{:.0f}[/b][/size] [size=16sp]km[/size]".format(
                 v.get("fuel_range", 0.0))
-        roll_val = v.get("roll", 0.0)
-        for wid in ("roll_fan_l", "roll_fan_r"):
-            if wid in ids:
-                ids[wid].angle = roll_val
-        pitch_val = v.get("pitch", 0.0)
-        for wid in ("pitch_bar_1", "pitch_bar_2"):
-            if wid in ids:
-                ids[wid].value = pitch_val
+        if "roll" in ids:
+            ids["roll"].angle = v.get("roll", 0.0)
+        if "pitch" in ids:
+            ids["pitch"].angle = v.get("pitch", 0.0)
         if "tires" in ids:
             t = ids["tires"]
             t.fl, t.fr, t.rl, t.rr = (
                 v["tire_fl"], v["tire_fr"], v["tire_rl"], v["tire_rr"])
+            t.fl_t, t.fr_t, t.rl_t, t.rr_t = (
+                v["tire_fl_temp"], v["tire_fr_temp"],
+                v["tire_rl_temp"], v["tire_rr_temp"])
 
     # ---------------- dialogues ----------------
     def open_settings(self):

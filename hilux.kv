@@ -284,53 +284,49 @@
                             source: app.bg_image
                             fit_mode: "cover"
 
-                        # -------- roulis : aile gauche --------
-                        RollFanGauge:
-                            id: roll_fan_l
-                            mirror: False
-                            size_hint: 0.22, 0.68
-                            pos_hint: {"right": 0.32, "center_y": 0.48}
-                        # valeur miroir (voir RollFanGauge._is_active / data.py pour la convention de signe)
-                        MDLabel:
-                            text: "{:.0f}".format(round(-roll_fan_l.angle) + 0.0)
-                            theme_text_color: "Custom"
-                            text_color: app.c_text
-                            size_hint: None, None
-                            size: dp(50), dp(24)
-                            pos_hint: {"right": 0.08, "center_y": 0.48}
-
-                        # -------- tangage : colonnes centrales --------
-                        VBarGauge:
-                            id: pitch_bar_2
-                            vmin: -45
-                            vmax: 45
-                            warn: 15
-                            alarm: 25
-                            framed: True
-                            size_hint: 0.035, 0.6
-                            pos_hint: {"x": 0.40, "center_y": 0.48}
-                        MDLabel:
-                            text: "{:.0f}".format(round(pitch_bar_2.value) + 0.0)
-                            theme_text_color: "Custom"
-                            text_color: app.c_text
-                            halign: "center"
-                            size_hint: None, None
-                            size: dp(60), dp(24)
-                            pos_hint: {"center_x": 0.4175, "y": 0.79}
-
-                        # -------- roulis : aile droite (miroir) --------
-                        RollFanGauge:
-                            id: roll_fan_r
-                            mirror: True
-                            size_hint: 0.22, 0.68
-                            pos_hint: {"x": 0.46, "center_y": 0.48}
-                        MDLabel:
-                            text: "{:.0f}".format(round(roll_fan_r.angle) + 0.0)
-                            theme_text_color: "Custom"
-                            text_color: app.c_text
-                            size_hint: None, None
-                            size: dp(50), dp(24)
-                            pos_hint: {"x": 0.70, "center_y": 0.48}
+                        # -------- roulis / tangage : silhouettes --------
+                        MDBoxLayout:
+                            orientation: "horizontal"
+                            spacing: dp(12)
+                            padding: dp(12)
+                            size_hint: 0.62, 0.85
+                            pos_hint: {"x": 0.0, "center_y": 0.5}
+                            MDCard:
+                                orientation: "vertical"
+                                md_bg_color: app.c_surface[0], app.c_surface[1], app.c_surface[2], 0.85
+                                radius: [dp(16),]
+                                padding: dp(8)
+                                MDLabel:
+                                    text: "Roulis (lateral)"
+                                    halign: "center"
+                                    theme_text_color: "Secondary"
+                                    size_hint_y: 0.15
+                                TiltIndicator:
+                                    id: roll
+                                    axis: "roll"
+                                MDLabel:
+                                    text: "{:+.0f} deg".format(round(roll.angle) + 0.0)
+                                    halign: "center"
+                                    font_style: "H4"
+                                    size_hint_y: 0.2
+                            MDCard:
+                                orientation: "vertical"
+                                md_bg_color: app.c_surface[0], app.c_surface[1], app.c_surface[2], 0.85
+                                radius: [dp(16),]
+                                padding: dp(8)
+                                MDLabel:
+                                    text: "Tangage (avant/arriere)"
+                                    halign: "center"
+                                    theme_text_color: "Secondary"
+                                    size_hint_y: 0.15
+                                TiltIndicator:
+                                    id: pitch
+                                    axis: "pitch"
+                                MDLabel:
+                                    text: "{:+.0f} deg".format(round(pitch.angle) + 0.0)
+                                    halign: "center"
+                                    font_style: "H4"
+                                    size_hint_y: 0.2
 
                         # -------- panneau droit : cap + vitesse --------
                         HeadingArrow:
@@ -373,42 +369,149 @@
                     name: "tires"
                     text: "Pneus"
                     icon: "car-tire-alert"
-                    MDBoxLayout:
-                        orientation: "vertical"
-                        padding: dp(12)
-                        MDLabel:
-                            text: "Pression pneumatiques (bar)"
-                            halign: "center"
-                            theme_text_color: "Secondary"
-                            size_hint_y: 0.1
-                        FloatLayout:
-                            TireDiagram:
-                                id: tires
-                                pos_hint: {"center_x": .5, "center_y": .5}
+                    FloatLayout:
+                        id: tires_root
+                        Image:
+                            source: app.bg_image
+                            fit_mode: "cover"
+
+                        # -------- silhouette véhicule + 4 pneus (centre) --------
+                        TireDiagram:
+                            id: tires
+                            size_hint: 0.30, 0.82
+                            pos_hint: {"center_x": .5, "center_y": .5}
+
+                        # -------- avant-gauche --------
+                        TireFanGauge:
+                            id: g_tire_fl
+                            value: tires.fl
+                            size_hint: None, None
+                            size: dp(46), dp(58)
+                            pos_hint: {"x": 0.03, "top": 0.90}
+                        MDBoxLayout:
+                            orientation: "vertical"
+                            size_hint: None, None
+                            size: dp(150), dp(120)
+                            pos_hint: {"x": 0.13, "top": 0.94}
                             MDLabel:
                                 text: "{:.2f}".format(tires.fl)
                                 halign: "center"
-                                font_style: "H5"
-                                size_hint: None, None
-                                pos_hint: {"center_x": .30, "center_y": .82}
+                                font_style: "H4"
+                                bold: True
+                                theme_text_color: "Custom"
+                                text_color: app.c_text
+                            MDLabel:
+                                text: "— bar —"
+                                halign: "center"
+                                theme_text_color: "Custom"
+                                text_color: app.c_text
+                                size_hint_y: 0.5
+                            MDLabel:
+                                text: "{:.0f}°".format(tires.fl_t)
+                                halign: "center"
+                                font_style: "H6"
+                                bold: True
+                                theme_text_color: "Custom"
+                                text_color: app.c_text
+
+                        # -------- avant-droite --------
+                        MDBoxLayout:
+                            orientation: "vertical"
+                            size_hint: None, None
+                            size: dp(150), dp(120)
+                            pos_hint: {"right": 0.87, "top": 0.94}
                             MDLabel:
                                 text: "{:.2f}".format(tires.fr)
                                 halign: "center"
-                                font_style: "H5"
-                                size_hint: None, None
-                                pos_hint: {"center_x": .70, "center_y": .82}
+                                font_style: "H4"
+                                bold: True
+                                theme_text_color: "Custom"
+                                text_color: app.c_text
+                            MDLabel:
+                                text: "— bar —"
+                                halign: "center"
+                                theme_text_color: "Custom"
+                                text_color: app.c_text
+                                size_hint_y: 0.5
+                            MDLabel:
+                                text: "{:.0f}°".format(tires.fr_t)
+                                halign: "center"
+                                font_style: "H6"
+                                bold: True
+                                theme_text_color: "Custom"
+                                text_color: app.c_text
+                        TireFanGauge:
+                            id: g_tire_fr
+                            value: tires.fr
+                            size_hint: None, None
+                            size: dp(46), dp(58)
+                            pos_hint: {"right": 0.97, "top": 0.90}
+
+                        # -------- arrière-gauche --------
+                        TireFanGauge:
+                            id: g_tire_rl
+                            value: tires.rl
+                            size_hint: None, None
+                            size: dp(46), dp(58)
+                            pos_hint: {"x": 0.03, "y": 0.06}
+                        MDBoxLayout:
+                            orientation: "vertical"
+                            size_hint: None, None
+                            size: dp(150), dp(120)
+                            pos_hint: {"x": 0.13, "y": 0.02}
                             MDLabel:
                                 text: "{:.2f}".format(tires.rl)
                                 halign: "center"
-                                font_style: "H5"
-                                size_hint: None, None
-                                pos_hint: {"center_x": .30, "center_y": .18}
+                                font_style: "H4"
+                                bold: True
+                                theme_text_color: "Custom"
+                                text_color: app.c_text
+                            MDLabel:
+                                text: "— bar —"
+                                halign: "center"
+                                theme_text_color: "Custom"
+                                text_color: app.c_text
+                                size_hint_y: 0.5
+                            MDLabel:
+                                text: "{:.0f}°".format(tires.rl_t)
+                                halign: "center"
+                                font_style: "H6"
+                                bold: True
+                                theme_text_color: "Custom"
+                                text_color: app.c_text
+
+                        # -------- arrière-droite --------
+                        MDBoxLayout:
+                            orientation: "vertical"
+                            size_hint: None, None
+                            size: dp(150), dp(120)
+                            pos_hint: {"right": 0.87, "y": 0.02}
                             MDLabel:
                                 text: "{:.2f}".format(tires.rr)
                                 halign: "center"
-                                font_style: "H5"
-                                size_hint: None, None
-                                pos_hint: {"center_x": .70, "center_y": .18}
+                                font_style: "H4"
+                                bold: True
+                                theme_text_color: "Custom"
+                                text_color: app.c_text
+                            MDLabel:
+                                text: "— bar —"
+                                halign: "center"
+                                theme_text_color: "Custom"
+                                text_color: app.c_text
+                                size_hint_y: 0.5
+                            MDLabel:
+                                text: "{:.0f}°".format(tires.rr_t)
+                                halign: "center"
+                                font_style: "H6"
+                                bold: True
+                                theme_text_color: "Custom"
+                                text_color: app.c_text
+                        TireFanGauge:
+                            id: g_tire_rr
+                            value: tires.rr
+                            size_hint: None, None
+                            size: dp(46), dp(58)
+                            pos_hint: {"right": 0.97, "y": 0.06}
 
         # Température extérieure : superposée en haut à gauche de la top bar
         # (celle-ci ne peut pas afficher de texte libre dans ses action items,
