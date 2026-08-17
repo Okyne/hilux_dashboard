@@ -109,6 +109,25 @@ class HiluxApp(MDApp):
         nav.remove_widget(nav.ids.bottom_panel)  # footer retiré (swipe only)
 
         self._topbar = root.ids.topbar
+        # MDTopAppBar centers the title in the space left between its two
+        # action-item boxes, not in the bar itself: since we only have
+        # icons on the right, the title otherwise sits left of true center.
+        # Mirror the right box's width onto the (empty) left box so the
+        # remaining space — and thus the title — stays centered.
+        left_actions = self._topbar.ids.left_actions
+        right_actions = self._topbar.ids.right_actions
+
+        def _sync_action_box_widths(*_args):
+            if left_actions.width != right_actions.width:
+                left_actions.width = right_actions.width
+
+        # KivyMD (re)sets each box's width asynchronously (Clock.schedule_once)
+        # once its action items are laid out, in no guaranteed order — bind
+        # both ways so the empty left box always ends up matching the right
+        # one's width, whichever settles last.
+        left_actions.bind(width=_sync_action_box_widths)
+        right_actions.bind(width=_sync_action_box_widths)
+        _sync_action_box_widths()
         self.apply_theme()
         self._dialog = None
         self._roll_offset = 0.0
