@@ -40,12 +40,9 @@
                     name: "engine"
                     text: "Moteur"
                     icon: "engine"
+                    md_bg_color: 0, 0, 0, 0
                     FloatLayout:
                         id: engine_root
-                        Image:
-                            source: app.bg_image
-                            fit_mode: "cover"
-
 
                         # -------- jauge huile (gauche) --------
                         VBarGauge:
@@ -277,12 +274,9 @@
                     name: "tilt"
                     text: "Inclinaison"
                     icon: "angle-acute"
+                    md_bg_color: 0, 0, 0, 0
                     FloatLayout:
                         id: tilt_root
-
-                        Image:
-                            source: app.bg_image
-                            fit_mode: "cover"
 
                         # -------- roulis / tangage : cadrans façon clinomètre --------
                         MDBoxLayout:
@@ -445,11 +439,9 @@
                     name: "tires"
                     text: "Pneus"
                     icon: "car-tire-alert"
+                    md_bg_color: 0, 0, 0, 0
                     FloatLayout:
                         id: tires_root
-                        Image:
-                            source: app.bg_image
-                            fit_mode: "cover"
 
                         # -------- silhouette véhicule + 4 pneus (centre) --------
                         TireDiagram:
