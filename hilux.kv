@@ -432,6 +432,14 @@
                             size: dp(160), dp(24)
                             pos_hint: {"center_x": 0.84, "y": 0.30}
 
+                        # -------- remise à zéro tangage/roulis (bas gauche) --------
+                        MDFloatingActionButton:
+                            icon: "restore"
+                            md_bg_color: app.c_accent
+                            icon_color: 1, 1, 1, 1
+                            pos_hint: {"x": 0.02, "y": 0.03}
+                            on_release: app.reset_tilt()
+
                 # ---------------- Écran 3 : pneus ----------------
                 MDBottomNavigationItem:
                     name: "tires"

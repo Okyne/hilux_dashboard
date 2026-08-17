@@ -111,6 +111,8 @@ class HiluxApp(MDApp):
         self._topbar = root.ids.topbar
         self.apply_theme()
         self._dialog = None
+        self._roll_offset = 0.0
+        self._pitch_offset = 0.0
         Clock.schedule_interval(self._tick, 1 / 5.0)   # 5 Hz
         return root
 
@@ -186,9 +188,9 @@ class HiluxApp(MDApp):
             ids["g_range"].text = "[size=25sp][b]{:.0f}[/b][/size] [size=16sp]km[/size]".format(
                 v.get("fuel_range", 0.0))
         if "roll" in ids:
-            ids["roll"].angle = v.get("roll", 0.0)
+            ids["roll"].angle = v.get("roll", 0.0) - self._roll_offset
         if "pitch" in ids:
-            ids["pitch"].angle = v.get("pitch", 0.0)
+            ids["pitch"].angle = v.get("pitch", 0.0) - self._pitch_offset
         if "tires" in ids:
             t = ids["tires"]
             t.fl, t.fr, t.rl, t.rr = (
@@ -196,6 +198,13 @@ class HiluxApp(MDApp):
             t.fl_t, t.fr_t, t.rl_t, t.rr_t = (
                 v["tire_fl_temp"], v["tire_fr_temp"],
                 v["tire_rl_temp"], v["tire_rr_temp"])
+
+    def reset_tilt(self):
+        """Prend l'angle brut courant comme nouveau zéro (compense un
+        changement d'inclinaison physique du boîtier)."""
+        v = self.source.values
+        self._roll_offset = v.get("roll", 0.0)
+        self._pitch_offset = v.get("pitch", 0.0)
 
     # ---------------- dialogues ----------------
     def open_settings(self):
