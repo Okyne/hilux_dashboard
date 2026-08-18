@@ -34,13 +34,14 @@ from widgets import (  # noqa: F401
 )
 # Enregistre les onglets de l'écran réglages (contenu déclaré dans hilux.kv)
 from settings_tabs import (  # noqa: F401
-    CalibrationTab, TiresSettingsTab, UnitsTab, NetworkTab, TerminalTab,
+    CalibrationTab, TiresSettingsTab, TireSizeTab, UnitsTab, NetworkTab, TerminalTab,
 )
 from terminal import TerminalConsole, stop_all as stop_terminals  # noqa: F401
 from data import DummyDataSource
 
 import telemetry
 import theme
+import tire_calibration
 
 # Ordre des onglets (doit correspondre aux `name:` des MDBottomNavigationItem
 # dans hilux.kv) : pilote la navigation par swipe gauche/droite.
@@ -106,6 +107,15 @@ class HiluxApp(MDApp):
     c_tire_tol = NumericProperty(0.3)      # tolérance avant alerte (bar)
     using_mqtt = BooleanProperty(False)
 
+    # Taille de pneu réellement montée (largeur mm / hauteur % / jante
+    # pouces), persistée sur disque (voir tire_calibration.py) car c'est un
+    # réglage physique durable, contrairement aux autres réglages ci-dessus.
+    tire_width = NumericProperty(tire_calibration.REFERENCE_TIRE["width"])
+    tire_aspect = NumericProperty(tire_calibration.REFERENCE_TIRE["aspect"])
+    tire_rim = NumericProperty(tire_calibration.REFERENCE_TIRE["rim"])
+    speed_ratio = NumericProperty(1.0)
+    trip_km = NumericProperty(0.0)
+
     bg_image = StringProperty("assets/bg_day.png")
     clock_str = StringProperty("--:--")
 
@@ -115,6 +125,16 @@ class HiluxApp(MDApp):
         self.theme_cls.primary_palette = "Blue"
         self.theme_cls.theme_style = "Light"
         self.theme_cls.bind(theme_style=lambda *a: self.apply_theme())
+
+        # Taille de pneu montée (persistée) -> facteur de correction
+        tire = tire_calibration.load_settings()
+        self.tire_width = tire["width"]
+        self.tire_aspect = tire["aspect"]
+        self.tire_rim = tire["rim"]
+        self._update_speed_ratio()
+        self.bind(tire_width=self._on_tire_size_changed,
+                  tire_aspect=self._on_tire_size_changed,
+                  tire_rim=self._on_tire_size_changed)
 
         # Source de données
         self.using_mqtt = os.environ.get("HILUX_SOURCE") == "mqtt"
@@ -215,7 +235,12 @@ class HiluxApp(MDApp):
         if "g_ext" in ids:
             ids["g_ext"].text = "{:.0f}°".format(v["ext_temp"])
         self.clock_str = time.strftime("%H:%M")
-        speed_text = "{:.0f}".format(v.get("speed", 0.0))
+        # Vitesse/conso brutes calibrées pour le pneu d'origine (255/70 R15) :
+        # on les corrige par le facteur lié à la taille de pneu réellement
+        # montée avant tout affichage ou intégration (voir tire_calibration.py).
+        corrected_speed = v.get("speed", 0.0) * self.speed_ratio
+        self.trip_km += corrected_speed * dt / 3600.0
+        speed_text = "{:.0f}".format(corrected_speed)
         for wid in ("g_speed", "g_speed2"):
             if wid in ids:
                 ids[wid].text = speed_text
@@ -225,10 +250,10 @@ class HiluxApp(MDApp):
                 ids[wid].text = heading_text
         if "g_fuel_inst" in ids:
             ids["g_fuel_inst"].text = "[size=28sp][b]{}[/b][/size] [size=14sp]l/km[/size]".format(
-                _fr(v["fuel_inst"]))
+                _fr(v["fuel_inst"] / self.speed_ratio))
         if "g_fuel_avg" in ids:
             ids["g_fuel_avg"].text = "[size=28sp][b]{}[/b][/size] [size=14sp]l/km[/size]".format(
-                _fr(v["fuel_avg"]))
+                _fr(v["fuel_avg"] / self.speed_ratio))
         if "g_battery" in ids:
             ids["g_battery"].text = "[size=25sp][b]{}[/b][/size]  [size=16sp]v[/size]".format(
                 _fr(v.get("battery_voltage", 0.0)))
@@ -253,6 +278,21 @@ class HiluxApp(MDApp):
         v = self.source.values
         self.roll_offset = v.get("roll", 0.0)
         self.pitch_offset = v.get("pitch", 0.0)
+
+    # ---------------- taille de pneu / correction vitesse-conso ----------------
+    def _on_tire_size_changed(self, *_args):
+        self._update_speed_ratio()
+        tire_calibration.save_settings(self.tire_width, self.tire_aspect, self.tire_rim)
+
+    def _update_speed_ratio(self):
+        try:
+            self.speed_ratio = tire_calibration.speed_ratio(
+                self.tire_width, self.tire_aspect, self.tire_rim)
+        except ZeroDivisionError:
+            self.speed_ratio = 1.0
+
+    def reset_trip(self):
+        self.trip_km = 0.0
 
     # ---------------- écran réglages ----------------
     def open_settings(self):

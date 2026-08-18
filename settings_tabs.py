@@ -17,6 +17,11 @@ class TiresSettingsTab(MDBoxLayout, MDTabsBase):
     """Pression cible et tolérance utilisées par les jauges de pneus."""
 
 
+class TireSizeTab(MDBoxLayout, MDTabsBase):
+    """Taille de pneu montée, utilisée pour corriger vitesse, trip et
+    consommation quand elle diffère de la taille d'origine du véhicule."""
+
+
 class UnitsTab(MDBoxLayout, MDTabsBase):
     """Choix des unités affichées (placeholder, pas encore implémenté)."""
 

@@ -648,6 +648,10 @@
                     title: "Pneus"
                     icon: "car-tire-alert"
 
+                TireSizeTab:
+                    title: "Taille pneus"
+                    icon: "tape-measure"
+
                 UnitsTab:
                     title: "Unités"
                     icon: "ruler"
@@ -725,6 +729,87 @@
         step: 0.05
         value: app.c_tire_tol
         on_value: app.c_tire_tol = self.value
+
+    Widget:
+
+<TireSizeTab>:
+    orientation: "vertical"
+    padding: dp(28)
+    spacing: dp(10)
+    md_bg_color: 0, 0, 0, 0
+
+    MDLabel:
+        text: "Pneu d'origine (calibration vitesse/compteur du véhicule) : 255/70 R15"
+        theme_text_color: "Custom"
+        text_color: app.c_text_dim
+        text_size: self.width, None
+        size_hint_y: None
+        height: self.texture_size[1]
+
+    MDLabel:
+        text: "Pneu monté : {:.0f}/{:.0f} R{:.0f}   —   facteur de correction ×{:.3f}".format(app.tire_width, app.tire_aspect, app.tire_rim, app.speed_ratio)
+        theme_text_color: "Custom"
+        text_color: app.c_text
+        font_style: "H6"
+        bold: True
+        size_hint_y: None
+        height: self.texture_size[1]
+
+    MDLabel:
+        text: "Largeur : {:.0f} mm".format(app.tire_width)
+        theme_text_color: "Custom"
+        text_color: app.c_text
+        size_hint_y: None
+        height: self.texture_size[1]
+
+    MDSlider:
+        min: 175
+        max: 315
+        step: 5
+        value: app.tire_width
+        on_value: app.tire_width = self.value
+
+    MDLabel:
+        text: "Hauteur de flanc : {:.0f} %".format(app.tire_aspect)
+        theme_text_color: "Custom"
+        text_color: app.c_text
+        size_hint_y: None
+        height: self.texture_size[1]
+
+    MDSlider:
+        min: 30
+        max: 85
+        step: 5
+        value: app.tire_aspect
+        on_value: app.tire_aspect = self.value
+
+    MDLabel:
+        text: "Diamètre de jante : {:.0f} pouces".format(app.tire_rim)
+        theme_text_color: "Custom"
+        text_color: app.c_text
+        size_hint_y: None
+        height: self.texture_size[1]
+
+    MDSlider:
+        min: 13
+        max: 20
+        step: 1
+        value: app.tire_rim
+        on_value: app.tire_rim = self.value
+
+    MDLabel:
+        text: "Trip (distance corrigée) : {:.1f} km".format(app.trip_km)
+        theme_text_color: "Custom"
+        text_color: app.c_text
+        size_hint_y: None
+        height: self.texture_size[1]
+
+    MDRaisedButton:
+        text: "RÉINITIALISER LE TRIP"
+        md_bg_color: app.c_accent
+        size_hint: None, None
+        size: dp(220), dp(48)
+        on_release: app.reset_trip()
 
     Widget:
 
