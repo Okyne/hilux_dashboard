@@ -191,6 +191,14 @@
                             size_hint: None, None
                             size: dp(200), dp(20)
                             pos_hint: {"right": 0.85, "top": 0.35}
+                        MDIcon:
+                            icon: "alert"
+                            theme_text_color: "Custom"
+                            text_color: app.c_warn
+                            opacity: 1 if app.tire_mismatch else 0
+                            size_hint: None, None
+                            size: dp(20), dp(20)
+                            pos: g_fuel_inst.right + dp(6), g_fuel_inst.center_y - self.height / 2
                         MDLabel:
                             id: g_fuel_avg
                             markup: True
@@ -209,6 +217,14 @@
                             size_hint: None, None
                             size: dp(200), dp(20)
                             pos_hint: {"right": 0.85, "top": 0.20}
+                        MDIcon:
+                            icon: "alert"
+                            theme_text_color: "Custom"
+                            text_color: app.c_warn
+                            opacity: 1 if app.tire_mismatch else 0
+                            size_hint: None, None
+                            size: dp(20), dp(20)
+                            pos: g_fuel_avg.right + dp(6), g_fuel_avg.center_y - self.height / 2
 
                         # -------- ligne du bas : liquide / batterie / autonomie --------
                         MDIcon:
@@ -276,6 +292,14 @@
                             size_hint: None, None
                             size: dp(90), dp(24)
                             pos_hint: {"x": 0.74, "y": 0.045}
+                        MDIcon:
+                            icon: "alert"
+                            theme_text_color: "Custom"
+                            text_color: app.c_warn
+                            opacity: 1 if app.tire_mismatch else 0
+                            size_hint: None, None
+                            size: dp(20), dp(20)
+                            pos: g_range.right + dp(6), g_range.center_y - self.height / 2
 
                 # ---------------- Écran 2 : inclinaison ----------------
                 MDBottomNavigationItem:

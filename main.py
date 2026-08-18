@@ -114,6 +114,7 @@ class HiluxApp(MDApp):
     tire_aspect = NumericProperty(tire_calibration.REFERENCE_TIRE["aspect"])
     tire_rim = NumericProperty(tire_calibration.REFERENCE_TIRE["rim"])
     speed_ratio = NumericProperty(1.0)
+    tire_mismatch = BooleanProperty(False)  # taille montée != 255/70 R15
     trip_km = NumericProperty(0.0)
 
     bg_image = StringProperty("assets/bg_day.png")
@@ -290,6 +291,12 @@ class HiluxApp(MDApp):
                 self.tire_width, self.tire_aspect, self.tire_rim)
         except ZeroDivisionError:
             self.speed_ratio = 1.0
+        ref = tire_calibration.REFERENCE_TIRE
+        self.tire_mismatch = (
+            self.tire_width != ref["width"]
+            or self.tire_aspect != ref["aspect"]
+            or self.tire_rim != ref["rim"]
+        )
 
     def reset_trip(self):
         self.trip_km = 0.0
