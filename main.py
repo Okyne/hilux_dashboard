@@ -20,7 +20,8 @@ Config.set("graphics", "height", "600")
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.metrics import dp
-from kivy.properties import BooleanProperty, ListProperty, StringProperty
+from kivy.properties import BooleanProperty, ListProperty, NumericProperty, StringProperty
+from kivy.uix.screenmanager import NoTransition, ScreenManager
 
 from kivymd.app import MDApp
 from kivymd.uix.dialog import MDDialog
@@ -31,8 +32,14 @@ from kivymd.uix.screen import MDScreen
 from widgets import (  # noqa: F401
     VBarGauge, HBarGauge, HeadingArrow, TiltIndicator, TireDiagram, TireFanGauge,
 )
+# Enregistre les onglets de l'écran réglages (contenu déclaré dans hilux.kv)
+from settings_tabs import (  # noqa: F401
+    CalibrationTab, TiresSettingsTab, UnitsTab, NetworkTab, TerminalTab,
+)
+from terminal import TerminalConsole, stop_all as stop_terminals  # noqa: F401
 from data import DummyDataSource
 
+import telemetry
 import theme
 
 # Ordre des onglets (doit correspondre aux `name:` des MDBottomNavigationItem
@@ -75,6 +82,11 @@ class RootScreen(MDScreen):
         return super().on_touch_up(touch)
 
 
+class SettingsScreen(MDScreen):
+    """Écran réglages : onglets (calibration, pneus, unités, réseau,
+    terminal), chacun son propre écran défini dans hilux.kv."""
+
+
 class HiluxApp(MDApp):
     night_mode = BooleanProperty(False)
 
@@ -87,6 +99,13 @@ class HiluxApp(MDApp):
     c_warn = ListProperty([0.90, 0.60, 0.10, 1])
     c_alarm = ListProperty([0.85, 0.20, 0.20, 1])
 
+    # Réglages exposés à l'écran réglages (voir settings_tabs.py / hilux.kv)
+    roll_offset = NumericProperty(0.0)
+    pitch_offset = NumericProperty(0.0)
+    c_tire_target = NumericProperty(2.5)   # pression cible (bar)
+    c_tire_tol = NumericProperty(0.3)      # tolérance avant alerte (bar)
+    using_mqtt = BooleanProperty(False)
+
     bg_image = StringProperty("assets/bg_day.png")
     clock_str = StringProperty("--:--")
 
@@ -98,18 +117,19 @@ class HiluxApp(MDApp):
         self.theme_cls.bind(theme_style=lambda *a: self.apply_theme())
 
         # Source de données
-        if os.environ.get("HILUX_SOURCE") == "mqtt":
+        self.using_mqtt = os.environ.get("HILUX_SOURCE") == "mqtt"
+        if self.using_mqtt:
             from mqtt_source import MqttDataSource
             self.source = MqttDataSource()
         else:
             self.source = DummyDataSource()
 
-        root = RootScreen()
-        nav = root.ids.nav
+        self._dashboard = RootScreen(name="dashboard")
+        nav = self._dashboard.ids.nav
         nav.remove_widget(nav.ids.bottom_panel)  # footer retiré (swipe only)
         self._tabs = [nav.ids.tab_manager.get_screen(n) for n in SCREEN_ORDER]
 
-        self._topbar = root.ids.topbar
+        self._topbar = self._dashboard.ids.topbar
         # MDTopAppBar centers the title in the space left between its two
         # action-item boxes, not in the bar itself: since we only have
         # icons on the right, the title otherwise sits left of true center.
@@ -131,13 +151,16 @@ class HiluxApp(MDApp):
         _sync_action_box_widths()
         self.apply_theme()
         self._dialog = None
-        self._roll_offset = 0.0
-        self._pitch_offset = 0.0
+
+        manager = ScreenManager(transition=NoTransition())
+        manager.add_widget(self._dashboard)
+        manager.add_widget(SettingsScreen(name="settings"))
+
         Clock.schedule_interval(self._tick, 1 / 5.0)   # 5 Hz
-        return root
+        return manager
 
     def swipe_tab(self, direction):
-        nav = self.root.ids.nav
+        nav = self._dashboard.ids.nav
         tab_manager = nav.ids.tab_manager
         if tab_manager.transition.is_active:
             return  # ignore le swipe tant que la transition en cours n'est pas finie
@@ -180,7 +203,7 @@ class HiluxApp(MDApp):
     # ---------------- boucle de rafraîchissement ----------------
     def _tick(self, dt):
         self.source.update()
-        ids = self.root.ids
+        ids = self._dashboard.ids
         v = self.source.values
         gauges = {
             "g_oil_bar": "oil_temp", "g_coolant_bar": "coolant_temp",
@@ -213,9 +236,9 @@ class HiluxApp(MDApp):
             ids["g_range"].text = "[size=25sp][b]{:.0f}[/b][/size] [size=16sp]km[/size]".format(
                 v.get("fuel_range", 0.0))
         if "roll" in ids:
-            ids["roll"].angle = v.get("roll", 0.0) - self._roll_offset
+            ids["roll"].angle = v.get("roll", 0.0) - self.roll_offset
         if "pitch" in ids:
-            ids["pitch"].angle = v.get("pitch", 0.0) - self._pitch_offset
+            ids["pitch"].angle = v.get("pitch", 0.0) - self.pitch_offset
         if "tires" in ids:
             t = ids["tires"]
             t.fl, t.fr, t.rl, t.rr = (
@@ -228,21 +251,20 @@ class HiluxApp(MDApp):
         """Prend l'angle brut courant comme nouveau zéro (compense un
         changement d'inclinaison physique du boîtier)."""
         v = self.source.values
-        self._roll_offset = v.get("roll", 0.0)
-        self._pitch_offset = v.get("pitch", 0.0)
+        self.roll_offset = v.get("roll", 0.0)
+        self.pitch_offset = v.get("pitch", 0.0)
+
+    # ---------------- écran réglages ----------------
+    def open_settings(self):
+        self.root.current = "settings"
+
+    def close_settings(self):
+        self.root.current = "dashboard"
+
+    def on_stop(self):
+        stop_terminals()
 
     # ---------------- dialogues ----------------
-    def open_settings(self):
-        self._close_dialog()
-        self._dialog = MDDialog(
-            title="Réglages",
-            text="Calibration IMU, seuils de pression, choix caméra, unités...\n"
-                 "(à compléter)",
-            buttons=[MDFlatButton(text="FERMER",
-                                  on_release=lambda *_: self._close_dialog())],
-        )
-        self._dialog.open()
-
     def ask_shutdown(self):
         self._close_dialog()
         self._dialog = MDDialog(

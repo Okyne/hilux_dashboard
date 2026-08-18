@@ -1,4 +1,5 @@
 #:import NoTransition kivy.uix.screenmanager.NoTransition
+#:import telemetry telemetry
 
 # Interface Material Design (KivyMD 1.1.1).
 # Les jauges/inclinomètre/pneus restent des widgets canvas (légers).
@@ -453,6 +454,8 @@
                         # -------- silhouette véhicule + 4 pneus (centre) --------
                         TireDiagram:
                             id: tires
+                            target: app.c_tire_target
+                            tol: app.c_tire_tol
                             size_hint: 0.30, 0.82
                             pos_hint: {"center_x": .5, "center_y": .5}
 
@@ -460,6 +463,8 @@
                         TireFanGauge:
                             id: g_tire_fl
                             value: tires.fl
+                            target: app.c_tire_target
+                            tol: app.c_tire_tol
                             size_hint: None, None
                             size: dp(46), dp(58)
                             pos_hint: {"x": 0.08, "top": 0.90}
@@ -518,6 +523,8 @@
                         TireFanGauge:
                             id: g_tire_fr
                             value: tires.fr
+                            target: app.c_tire_target
+                            tol: app.c_tire_tol
                             size_hint: None, None
                             size: dp(46), dp(58)
                             pos_hint: {"right": 0.88, "top": 0.90}
@@ -526,6 +533,8 @@
                         TireFanGauge:
                             id: g_tire_rl
                             value: tires.rl
+                            target: app.c_tire_target
+                            tol: app.c_tire_tol
                             size_hint: None, None
                             size: dp(46), dp(58)
                             pos_hint: {"x": 0.08, "y": 0.09}
@@ -584,6 +593,8 @@
                         TireFanGauge:
                             id: g_tire_rr
                             value: tires.rr
+                            target: app.c_tire_target
+                            tol: app.c_tire_tol
                             size_hint: None, None
                             size: dp(46), dp(58)
                             pos_hint: {"right": 0.88, "y": 0.09}
@@ -602,3 +613,207 @@
             size: dp(70), dp(30)
             pos_hint: {"x": 0.01}
             y: topbar.center_y - self.height / 2
+
+# --------------------------------------------------------------------------- #
+#  Écran réglages : onglets, chacun lié à un écran indépendant
+# --------------------------------------------------------------------------- #
+<SettingsScreen>:
+    FloatLayout:
+        Image:
+            source: app.bg_image
+            fit_mode: "cover"
+
+        MDBoxLayout:
+            orientation: "vertical"
+
+            MDTopAppBar:
+                title: "Réglages"
+                elevation: 0
+                md_bg_color: 0, 0, 0, 0.01
+                specific_text_color: 1, 1, 1, 1
+                left_action_items: [["arrow-left", lambda x: app.close_settings()]]
+
+            MDTabs:
+                id: settings_tabs
+                background_color: 0, 0, 0, 0
+                text_color_normal: app.c_text_dim
+                text_color_active: app.c_accent
+                indicator_color: app.c_accent
+
+                CalibrationTab:
+                    title: "Calibration"
+                    icon: "axis-arrow"
+
+                TiresSettingsTab:
+                    title: "Pneus"
+                    icon: "car-tire-alert"
+
+                UnitsTab:
+                    title: "Unités"
+                    icon: "ruler"
+
+                NetworkTab:
+                    title: "Réseau"
+                    icon: "wifi"
+
+                TerminalTab:
+                    title: "Terminal"
+                    icon: "console-line"
+
+<CalibrationTab>:
+    orientation: "vertical"
+    padding: dp(28)
+    spacing: dp(18)
+    md_bg_color: 0, 0, 0, 0
+
+    MDLabel:
+        text: "Décalage appliqué au roulis et au tangage pour compenser le montage du boîtier IMU dans le véhicule (identique au bouton de remise à zéro de l'onglet Inclinaison)."
+        theme_text_color: "Custom"
+        text_color: app.c_text_dim
+        text_size: self.width, None
+        size_hint_y: None
+        height: self.texture_size[1]
+
+    MDLabel:
+        text: "Roulis : {:+.1f}°   Tangage : {:+.1f}°".format(app.roll_offset, app.pitch_offset)
+        theme_text_color: "Custom"
+        text_color: app.c_text
+        font_style: "H5"
+        bold: True
+        size_hint_y: None
+        height: self.texture_size[1]
+
+    MDRaisedButton:
+        text: "RÉINITIALISER LE ZÉRO"
+        md_bg_color: app.c_accent
+        size_hint: None, None
+        size: dp(260), dp(48)
+        on_release: app.reset_tilt()
+
+    Widget:
+
+<TiresSettingsTab>:
+    orientation: "vertical"
+    padding: dp(28)
+    spacing: dp(10)
+    md_bg_color: 0, 0, 0, 0
+
+    MDLabel:
+        text: "Pression cible : {:.2f} bar".format(app.c_tire_target)
+        theme_text_color: "Custom"
+        text_color: app.c_text
+        size_hint_y: None
+        height: self.texture_size[1]
+
+    MDSlider:
+        min: 1.5
+        max: 4.0
+        step: 0.05
+        value: app.c_tire_target
+        on_value: app.c_tire_target = self.value
+
+    MDLabel:
+        text: "Tolérance avant alerte : {:.2f} bar".format(app.c_tire_tol)
+        theme_text_color: "Custom"
+        text_color: app.c_text
+        size_hint_y: None
+        height: self.texture_size[1]
+
+    MDSlider:
+        min: 0.05
+        max: 1.0
+        step: 0.05
+        value: app.c_tire_tol
+        on_value: app.c_tire_tol = self.value
+
+    Widget:
+
+<UnitsTab>:
+    orientation: "vertical"
+    padding: dp(28)
+    md_bg_color: 0, 0, 0, 0
+
+    MDLabel:
+        text: "Choix des unités (km/h ↔ mph, bar ↔ psi, °C ↔ °F...) — à venir."
+        theme_text_color: "Custom"
+        text_color: app.c_text_dim
+        halign: "center"
+        valign: "middle"
+        text_size: self.width, self.height
+
+<NetworkTab>:
+    orientation: "vertical"
+    padding: dp(28)
+    spacing: dp(12)
+    md_bg_color: 0, 0, 0, 0
+
+    MDLabel:
+        text: "Broker MQTT : {}:{}".format(telemetry.BROKER_HOST, telemetry.BROKER_PORT)
+        theme_text_color: "Custom"
+        text_color: app.c_text
+        size_hint_y: None
+        height: self.texture_size[1]
+
+    MDLabel:
+        text: "Source de données : " + ("MQTT" if app.using_mqtt else "simulation locale (HILUX_SOURCE non défini)")
+        theme_text_color: "Custom"
+        text_color: app.c_text_dim
+        size_hint_y: None
+        height: self.texture_size[1]
+
+    Widget:
+
+<TerminalTab>:
+    padding: dp(8)
+
+    TerminalConsole:
+
+# --------------------------------------------------------------------------- #
+#  Terminal shell interactif (bash dans un pty, cf. terminal.py)
+# --------------------------------------------------------------------------- #
+<TerminalConsole>:
+    orientation: "vertical"
+    spacing: dp(6)
+    padding: dp(6)
+    md_bg_color: 0, 0, 0, 0.6
+
+    ScrollView:
+        id: scroll
+        bar_width: dp(4)
+        do_scroll_x: False
+
+        MDLabel:
+            text: root.output_text
+            theme_text_color: "Custom"
+            text_color: 0.2, 1, 0.3, 1
+            font_style: "Caption"
+            size_hint_y: None
+            height: max(self.texture_size[1], scroll.height)
+            text_size: self.width, None
+            padding: dp(6), dp(6)
+            halign: "left"
+            valign: "top"
+
+    MDBoxLayout:
+        size_hint_y: None
+        height: dp(48)
+        spacing: dp(6)
+
+        MDTextField:
+            id: input_field
+            hint_text: "commande shell…"
+            mode: "rectangle"
+            multiline: False
+            on_text_validate: root.send_line(self.text); self.text = ""
+
+        MDIconButton:
+            icon: "stop"
+            theme_text_color: "Custom"
+            text_color: app.c_warn
+            on_release: root.send_interrupt()
+
+        MDIconButton:
+            icon: "delete-sweep"
+            theme_text_color: "Custom"
+            text_color: app.c_text_dim
+            on_release: root.clear_output()
