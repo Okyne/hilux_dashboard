@@ -301,6 +301,12 @@ class HiluxApp(MDApp):
     def reset_trip(self):
         self.trip_km = 0.0
 
+    def reset_tire_size(self):
+        ref = tire_calibration.REFERENCE_TIRE
+        self.tire_width = ref["width"]
+        self.tire_aspect = ref["aspect"]
+        self.tire_rim = ref["rim"]
+
     # ---------------- écran réglages ----------------
     def open_settings(self):
         self.root.current = "settings"

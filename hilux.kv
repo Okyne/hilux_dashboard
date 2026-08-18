@@ -198,7 +198,7 @@
                             opacity: 1 if app.tire_mismatch else 0
                             size_hint: None, None
                             size: dp(20), dp(20)
-                            pos: g_fuel_inst.right + dp(6), g_fuel_inst.center_y - self.height / 2
+                            pos_hint: {"x": 0.80, "y": 0.365}
                         MDLabel:
                             id: g_fuel_avg
                             markup: True
@@ -224,7 +224,7 @@
                             opacity: 1 if app.tire_mismatch else 0
                             size_hint: None, None
                             size: dp(20), dp(20)
-                            pos: g_fuel_avg.right + dp(6), g_fuel_avg.center_y - self.height / 2
+                            pos_hint: {"x": 0.80, "y": 0.215}
 
                         # -------- ligne du bas : liquide / batterie / autonomie --------
                         MDIcon:
@@ -299,7 +299,7 @@
                             opacity: 1 if app.tire_mismatch else 0
                             size_hint: None, None
                             size: dp(20), dp(20)
-                            pos: g_range.right + dp(6), g_range.center_y - self.height / 2
+                            pos_hint: {"x": 0.82, "y": 0.045}
 
                 # ---------------- Écran 2 : inclinaison ----------------
                 MDBottomNavigationItem:
@@ -820,6 +820,13 @@
         step: 1
         value: app.tire_rim
         on_value: app.tire_rim = self.value
+
+    MDRaisedButton:
+        text: "RÉINITIALISER LA TAILLE (255/70 R15)"
+        md_bg_color: app.c_accent
+        size_hint: None, None
+        size: dp(320), dp(48)
+        on_release: app.reset_tire_size()
 
     MDLabel:
         text: "Trip (distance corrigée) : {:.1f} km".format(app.trip_km)
