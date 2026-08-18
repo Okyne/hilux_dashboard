@@ -34,6 +34,13 @@
                 # tab layouts (e.g. the tilt tab) after switching tabs — confirmed via
                 # screenshots at 0.8s/3s/7.5s post-switch and across every tab pairing.
                 transition: NoTransition
+                # NoTransition doesn't reposition screens during the switch (its
+                # on_progress is a no-op) — it just keeps both screens added to the
+                # manager, fully overlapped, until on_complete removes the old one
+                # after `transition_duration`. Force that window to 0 so the old
+                # screen is dropped on the very next frame instead of sitting
+                # stacked under the new one for 0.2s (the default).
+                transition_duration: 0
 
                 # ---------------- Écran 1 : moteur ----------------
                 MDBottomNavigationItem:
@@ -455,7 +462,7 @@
                             value: tires.fl
                             size_hint: None, None
                             size: dp(46), dp(58)
-                            pos_hint: {"x": 0.03, "top": 0.90}
+                            pos_hint: {"x": 0.08, "top": 0.90}
                         MDBoxLayout:
                             orientation: "vertical"
                             size_hint: None, None
@@ -487,7 +494,7 @@
                             orientation: "vertical"
                             size_hint: None, None
                             size: dp(150), dp(120)
-                            pos_hint: {"right": 0.87, "top": 0.94}
+                            pos_hint: {"right": 0.82, "top": 0.94}
                             MDLabel:
                                 text: "{:.2f}".format(tires.fr)
                                 halign: "center"
@@ -513,7 +520,7 @@
                             value: tires.fr
                             size_hint: None, None
                             size: dp(46), dp(58)
-                            pos_hint: {"right": 0.97, "top": 0.90}
+                            pos_hint: {"right": 0.88, "top": 0.90}
 
                         # -------- arrière-gauche --------
                         TireFanGauge:
@@ -521,7 +528,7 @@
                             value: tires.rl
                             size_hint: None, None
                             size: dp(46), dp(58)
-                            pos_hint: {"x": 0.03, "y": 0.06}
+                            pos_hint: {"x": 0.08, "y": 0.09}
                         MDBoxLayout:
                             orientation: "vertical"
                             size_hint: None, None
@@ -553,7 +560,7 @@
                             orientation: "vertical"
                             size_hint: None, None
                             size: dp(150), dp(120)
-                            pos_hint: {"right": 0.87, "y": 0.02}
+                            pos_hint: {"right": 0.82, "y": 0.02}
                             MDLabel:
                                 text: "{:.2f}".format(tires.rr)
                                 halign: "center"
@@ -579,7 +586,7 @@
                             value: tires.rr
                             size_hint: None, None
                             size: dp(46), dp(58)
-                            pos_hint: {"right": 0.97, "y": 0.06}
+                            pos_hint: {"right": 0.88, "y": 0.09}
 
         # Température extérieure : superposée en haut à gauche de la top bar
         # (celle-ci ne peut pas afficher de texte libre dans ses action items,
