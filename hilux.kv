@@ -9,14 +9,23 @@
 #  Écran de démarrage (logo sur fond noir, affiché quelques secondes)
 # --------------------------------------------------------------------------- #
 <SplashScreen>:
-    md_bg_color: 0, 0, 0, 1
+    FloatLayout:
+        # Fond noir peint via une texture plutôt que md_bg_color : sur
+        # certains pilotes GLES (Pi/DietPi), un simple Color+Rectangle ne
+        # sature pas le canal alpha du framebuffer et le compositeur laisse
+        # transparaître ce qu'il y a derrière la fenêtre — une Image, elle,
+        # est toujours rendue opaque (même technique que RootScreen/
+        # SettingsScreen pour leur fond).
+        Image:
+            source: "assets/black.png"
+            fit_mode: "cover"
 
-    Image:
-        source: "assets/logo_toyota.png"
-        size_hint: None, None
-        width: dp(320)
-        height: self.image_ratio and dp(320) / self.image_ratio
-        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+        Image:
+            source: "assets/logo_toyota.png"
+            size_hint: None, None
+            width: dp(320)
+            height: self.image_ratio and dp(320) / self.image_ratio
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
 
 # --------------------------------------------------------------------------- #
 #  Racine
