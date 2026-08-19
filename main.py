@@ -11,11 +11,14 @@ import os
 import time
 from kivy.config import Config
 
-Config.set("graphics", "width", "1024")
-Config.set("graphics", "height", "600")
-# Sur le Pi (kiosk plein écran), décommente :
-# Config.set("graphics", "fullscreen", "auto")
-# Config.set("graphics", "show_cursor", "0")
+# HILUX_FULLSCREEN=1 python main.py : lancement plein écran kiosk (Pi).
+# Sans cette variable, fenêtre 1024x600 pour le dev sur PC.
+if os.environ.get("HILUX_FULLSCREEN", "0") not in ("0", "", "false", "False"):
+    Config.set("graphics", "fullscreen", "auto")
+    Config.set("graphics", "show_cursor", "0")
+else:
+    Config.set("graphics", "width", "1024")
+    Config.set("graphics", "height", "600")
 
 from kivy.app import App
 from kivy.clock import Clock
