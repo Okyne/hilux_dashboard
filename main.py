@@ -88,6 +88,13 @@ class SettingsScreen(MDScreen):
     terminal), chacun son propre écran défini dans hilux.kv."""
 
 
+class SplashScreen(MDScreen):
+    """Écran affiché brièvement au lancement (logo sur fond noir)."""
+
+
+SPLASH_DURATION = 4.0  # secondes
+
+
 class HiluxApp(MDApp):
     night_mode = BooleanProperty(False)
 
@@ -174,8 +181,11 @@ class HiluxApp(MDApp):
         self._dialog = None
 
         manager = ScreenManager(transition=NoTransition())
+        manager.add_widget(SplashScreen(name="splash"))
         manager.add_widget(self._dashboard)
         manager.add_widget(SettingsScreen(name="settings"))
+        manager.current = "splash"
+        Clock.schedule_once(lambda dt: setattr(manager, "current", "dashboard"), SPLASH_DURATION)
 
         Clock.schedule_interval(self._tick, 1 / 5.0)   # 5 Hz
         return manager

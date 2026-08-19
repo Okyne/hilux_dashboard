@@ -6,6 +6,19 @@
 # Les couleurs canvas pointent vers app.c_* (dérivées de theme_cls).
 
 # --------------------------------------------------------------------------- #
+#  Écran de démarrage (logo sur fond noir, affiché quelques secondes)
+# --------------------------------------------------------------------------- #
+<SplashScreen>:
+    md_bg_color: 0, 0, 0, 1
+
+    Image:
+        source: "assets/logo_toyota.png"
+        size_hint: None, None
+        width: dp(320)
+        height: self.image_ratio and dp(320) / self.image_ratio
+        pos_hint: {"center_x": 0.5, "center_y": 0.5}
+
+# --------------------------------------------------------------------------- #
 #  Racine
 # --------------------------------------------------------------------------- #
 <RootScreen>:
