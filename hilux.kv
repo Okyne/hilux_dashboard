@@ -148,6 +148,14 @@
                             size_hint: None, None
                             size: dp(200), dp(70)
                             pos_hint: {"center_x": 0.5, "top": 0.90}
+                        MDIcon:
+                            icon: "alert"
+                            theme_text_color: "Custom"
+                            text_color: app.c_warn
+                            opacity: 1 if app.tire_mismatch else 0
+                            size_hint: None, None
+                            size: dp(20), dp(20)
+                            pos_hint: {"x": 0.54, "y": 0.79}
                         MDLabel:
                             text: "-- km/h --"
                             theme_text_color: "Custom"
@@ -449,6 +457,14 @@
                             size_hint: None, None
                             size: dp(160), dp(60)
                             pos_hint: {"center_x": 0.84, "center_y": 0.40}
+                        MDIcon:
+                            icon: "alert"
+                            theme_text_color: "Custom"
+                            text_color: app.c_warn
+                            opacity: 1 if app.tire_mismatch else 0
+                            size_hint: None, None
+                            size: dp(20), dp(20)
+                            pos_hint: {"x": 0.88, "y": 0.36}
                         MDLabel:
                             text: "-- km/h --"
                             theme_text_color: "Custom"
@@ -659,8 +675,8 @@
 
             MDTabs:
                 id: settings_tabs
-                background_color: 0, 0, 0, 0
-                text_color_normal: app.c_text_dim
+                background_color: 0, 0, 0, 0.5
+                text_color_normal: app.c_text
                 text_color_active: app.c_accent
                 indicator_color: app.c_accent
 
@@ -692,7 +708,7 @@
     orientation: "vertical"
     padding: dp(28)
     spacing: dp(18)
-    md_bg_color: 0, 0, 0, 0
+    md_bg_color: 0, 0, 0, 0.5
 
     MDLabel:
         text: "Décalage appliqué au roulis et au tangage pour compenser le montage du boîtier IMU dans le véhicule (identique au bouton de remise à zéro de l'onglet Inclinaison)."
@@ -724,7 +740,7 @@
     orientation: "vertical"
     padding: dp(28)
     spacing: dp(10)
-    md_bg_color: 0, 0, 0, 0
+    md_bg_color: 0, 0, 0, 0.5
 
     MDLabel:
         text: "Pression cible : {:.2f} bar".format(app.c_tire_target)
@@ -760,7 +776,7 @@
     orientation: "vertical"
     padding: dp(28)
     spacing: dp(10)
-    md_bg_color: 0, 0, 0, 0
+    md_bg_color: 0, 0, 0, 0.5
 
     MDLabel:
         text: "Pneu d'origine (calibration vitesse/compteur du véhicule) : 255/70 R15"
@@ -847,7 +863,7 @@
 <UnitsTab>:
     orientation: "vertical"
     padding: dp(28)
-    md_bg_color: 0, 0, 0, 0
+    md_bg_color: 0, 0, 0, 0.5
 
     MDLabel:
         text: "Choix des unités (km/h ↔ mph, bar ↔ psi, °C ↔ °F...) — à venir."
@@ -861,7 +877,7 @@
     orientation: "vertical"
     padding: dp(28)
     spacing: dp(12)
-    md_bg_color: 0, 0, 0, 0
+    md_bg_color: 0, 0, 0, 0.5
 
     MDLabel:
         text: "Broker MQTT : {}:{}".format(telemetry.BROKER_HOST, telemetry.BROKER_PORT)
@@ -881,6 +897,7 @@
 
 <TerminalTab>:
     padding: dp(8)
+    md_bg_color: 0, 0, 0, 0.5
 
     TerminalConsole:
 
