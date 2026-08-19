@@ -19,6 +19,7 @@ Config.set("graphics", "height", "600")
 
 from kivy.app import App
 from kivy.clock import Clock
+from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.properties import BooleanProperty, ListProperty, NumericProperty, StringProperty
 from kivy.uix.screenmanager import NoTransition, ScreenManager
@@ -31,6 +32,7 @@ from kivymd.uix.screen import MDScreen
 # Enregistre les widgets canvas pour le .kv
 from widgets import (  # noqa: F401
     VBarGauge, HBarGauge, HeadingArrow, TiltIndicator, TireDiagram, TireFanGauge,
+    ScreenOffOverlay,
 )
 # Enregistre les onglets de l'écran réglages (contenu déclaré dans hilux.kv)
 from settings_tabs import (  # noqa: F401
@@ -179,6 +181,7 @@ class HiluxApp(MDApp):
         _sync_action_box_widths()
         self.apply_theme()
         self._dialog = None
+        self._screen_off_overlay = ScreenOffOverlay()
 
         manager = ScreenManager(transition=NoTransition())
         manager.add_widget(SplashScreen(name="splash"))
@@ -230,6 +233,10 @@ class HiluxApp(MDApp):
             self.theme_cls.theme_style = "Light"
             self.theme_cls.primary_palette = "Blue"
         self.apply_theme()
+
+    def screen_off(self):
+        if self._screen_off_overlay.parent is None:
+            Window.add_widget(self._screen_off_overlay)
 
     # ---------------- boucle de rafraîchissement ----------------
     def _tick(self, dt):

@@ -22,6 +22,7 @@ from kivy.graphics import (
 )
 from kivy.metrics import dp
 from kivy.app import App
+from kivy.core.window import Window
 
 
 # --------------------------------------------------------------------------- #
@@ -312,3 +313,30 @@ class TireFanGauge(Widget):
 class TopBar(BoxLayout):
     """Barre présente sur tous les écrans : navigation + actions globales."""
     pass
+
+
+# --------------------------------------------------------------------------- #
+#  Extinction d'écran logicielle (pas d'arrêt de l'appli, juste un cache noir)
+# --------------------------------------------------------------------------- #
+class ScreenOffOverlay(Widget):
+    """Recouvre toute la fenêtre en noir ; un simple tap la retire (réveil)."""
+
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        self.size = Window.size
+        with self.canvas:
+            Color(0, 0, 0, 1)
+            self._rect = Rectangle(pos=self.pos, size=self.size)
+        self.bind(pos=self._sync_rect, size=self._sync_rect)
+        Window.bind(size=self._on_window_resize)
+
+    def _on_window_resize(self, _window, size):
+        self.size = size
+
+    def _sync_rect(self, *_a):
+        self._rect.pos = self.pos
+        self._rect.size = self.size
+
+    def on_touch_down(self, touch):
+        Window.remove_widget(self)
+        return True

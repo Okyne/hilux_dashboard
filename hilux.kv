@@ -652,6 +652,17 @@
                             size: dp(46), dp(58)
                             pos_hint: {"right": 0.88, "y": 0.09}
 
+        # Bouton extinction d'écran : superposé en haut à gauche de la top
+        # bar, avant la température (même contrainte que celle-ci : la top
+        # bar n'a que right_action_items d'utilisés ici).
+        MDIconButton:
+            icon: "monitor-off"
+            theme_text_color: "Custom"
+            text_color: 1, 1, 1, 1
+            pos_hint: {"x": 0.005}
+            y: topbar.center_y - self.height / 2
+            on_release: app.screen_off()
+
         # Température extérieure : superposée en haut à gauche de la top bar
         # (celle-ci ne peut pas afficher de texte libre dans ses action items,
         # qui n'acceptent que des icônes).
@@ -664,7 +675,7 @@
             text_color: 1, 1, 1, 1
             size_hint: None, None
             size: dp(70), dp(30)
-            pos_hint: {"x": 0.01}
+            pos_hint: {"x": 0.075}
             y: topbar.center_y - self.height / 2
 
 # --------------------------------------------------------------------------- #
