@@ -191,7 +191,20 @@ class HiluxApp(MDApp):
         manager.add_widget(self._dashboard)
         manager.add_widget(SettingsScreen(name="settings"))
         manager.current = "splash"
-        Clock.schedule_once(lambda dt: setattr(manager, "current", "dashboard"), SPLASH_DURATION)
+
+        def _start_splash_timer(_dt):
+            Clock.schedule_once(lambda _dt: setattr(manager, "current", "dashboard"), SPLASH_DURATION)
+
+        # Clock.schedule_once(fn, N) compte des secondes d'horloge murale
+        # depuis l'appel, pas depuis l'affichage effectif de l'écran : sur
+        # un Pi 3, construire les 3 écrans (jauges canvas, onglets réglages,
+        # terminal...) juste au-dessus peut à lui seul prendre plusieurs
+        # secondes, et le minuteur pouvait donc déjà être écoulé avant que
+        # la toute première frame ne soit rendue — le splash n'était alors
+        # jamais visible. On attend une frame de plus (schedule_once(.., 0))
+        # avant de démarrer le décompte, pour garantir que le splash a bien
+        # été affiché au moins une fois.
+        Clock.schedule_once(_start_splash_timer, 0)
 
         Clock.schedule_interval(self._tick, 1 / 5.0)   # 5 Hz
         return manager

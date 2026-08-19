@@ -1,0 +1,41 @@
+# Unit systemd pour l'autostart kiosk de l'UI Kivy sur le Pi/DietPi.
+#
+# Installation :
+#   sudo cp scripts/hilux-kivy.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now hilux-kivy.service
+#
+# Adapter avant installation :
+#   - WorkingDirectory / ExecStartPre / ExecStart : chemin réel du repo
+#     (remplacer /opt/hilux_dashboard)
+#   - User / Group : utilisateur qui possède la session X (souvent "dietpi")
+#   - XAUTHORITY : doit correspondre à l'utilisateur de la session X ci-dessus
+
+[Unit]
+Description=Hilux dashboard (UI Kivy)
+After=network-online.target graphical.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=dietpi
+Group=dietpi
+WorkingDirectory=/opt/hilux_dashboard
+
+# graphical.target ne garantit ni que le serveur X répond, ni que le
+# gestionnaire de fenêtres/compositeur a fini de démarrer : sans cette
+# attente, Kivy ouvre sa fenêtre avant que le WM ne la prenne en charge et
+# elle reste transparente (le bureau se voit au travers) le temps que le WM
+# rattrape son retard — typiquement pendant tout le splashscreen.
+ExecStartPre=/bin/bash -c 'for i in $(seq 1 30); do DISPLAY=:0 xset q >/dev/null 2>&1 && exit 0; sleep 1; done'
+ExecStartPre=/bin/sleep 5
+
+ExecStart=/opt/hilux_dashboard/scripts/start_ui.sh
+Restart=on-failure
+RestartSec=5
+
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/dietpi/.Xauthority
+
+[Install]
+WantedBy=graphical.target
